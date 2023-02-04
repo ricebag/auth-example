@@ -1,4 +1,4 @@
-export default () => (
+const FormExtra = () => (
   <div className="flex items-center justify-between ">
     <div className="flex items-center">
       <input
@@ -18,5 +18,6 @@ export default () => (
       </a>
     </div>
   </div>
-
 )
+
+export default FormExtra

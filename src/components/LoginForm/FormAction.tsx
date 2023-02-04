@@ -1,23 +1,24 @@
+import type { Event } from "../../types/event";
+
 type FormActionProps = {
-  handleSubmit: any;
+  handleSubmit: (e: Event) => void;
   action?: string;
   text: string;
 }
 
-export default function FormAction({
+const FormAction = ({
   handleSubmit,
-  action = 'submit',
   text
-}: FormActionProps) {
-  return (
-    <>
-      <button
-        type="button"
-        className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 mt-10"
-        onSubmit={handleSubmit}
-      >
-        {text}
-      </button>
-    </>
-  )
-}
+}: FormActionProps) => (
+  <>
+    <button
+      type="button"
+      className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 mt-10"
+      onSubmit={handleSubmit}
+    >
+      {text}
+    </button>
+  </>
+)
+
+export default FormAction

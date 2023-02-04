@@ -1,4 +1,5 @@
 import Link from "next/link"
+import Image from "next/image"
 
 type HeaderTypes = {
   heading: string;
@@ -7,7 +8,7 @@ type HeaderTypes = {
   linkUrl: string;
 }
 
-export default ({
+const LoginFormHeader = ({
   heading,
   paragraph,
   linkName,
@@ -15,9 +16,10 @@ export default ({
 }: HeaderTypes) => (
   <div className="mt-10 mb-5">
     <div className="flex justify-center">
-      <img
+      <Image
         alt=""
-        className="h-14 w-14"
+        width='100'
+        height='100'
         src="https://ik.imagekit.io/pibjyepn7p9/Lilac_Navy_Simple_Line_Business_Logo_CGktk8RHK.png?ik-sdk-version=javascript-1.4.3&updatedAt=1649962071315" />
     </div>
     <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
@@ -31,3 +33,5 @@ export default ({
     </p>
   </div>
 )
+
+export default LoginFormHeader

@@ -3,21 +3,24 @@ import Router from "next/router";
 
 import { loginFields } from "../../constants/FormFields";
 import { DiscordLogin, Input, FormAction, FormExtra, LoginFormHeader } from "..";
+import type { Event } from "../../types/event";
 
 const fields = loginFields;
-const fieldsState: any = {};
-fields.forEach(field => fieldsState[field.id] = '');
+const fieldsState: {
+  [key: string]: string | boolean
+} = {};
+fields.forEach((field) => fieldsState[field.id] = '');
 
 const LoginPage = () => {
   const [loginState, setLoginState] = useState(fieldsState);
 
-  const handleChange = (e: any) => {
+  const handleChange = (e: Event) => {
     setLoginState({ ...loginState, [e.target.id]: e.target.value })
   }
 
-  const handleSubmit = (e: any) => {
+  const handleSubmit = async (e: Event) => {
     e.preventDefault();
-    authenticateUser();
+    await authenticateUser();
   }
 
   // TODO: Handle Login API Integration here

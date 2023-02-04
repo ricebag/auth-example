@@ -7,7 +7,7 @@ const SignupPage: React.FC = () => {
     <div className="bg-slate-100 flex flex-col items-center gap-2">
       <SignUp />
 
-      <Copyright className="mt-20" />
+      <Copyright />
     </div>
   )
 }

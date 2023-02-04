@@ -1,6 +1,12 @@
+import type { ReactNode, FC } from 'react'
+
 import { default as Nav } from './Nav'
 
-export default function Layout({ children }: { children: any }) {
+type Props = {
+  children: ReactNode
+}
+
+const Layout: FC<Props> = ({ children }: Props) => {
   return (
     <div>
       <Nav />
@@ -8,3 +14,5 @@ export default function Layout({ children }: { children: any }) {
     </div>
   )
 }
+
+export default Layout

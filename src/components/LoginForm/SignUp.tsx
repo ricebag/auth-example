@@ -1,29 +1,33 @@
 import React, { useState } from "react";
-import Router from "next/router";
+// import Router from "next/router";
 
 import { signupFields } from "../../constants/FormFields"
 import { DiscordLogin, LoginFormHeader, Input, FormAction, } from '..'
+import type { Event } from "../../types/event";
 
 const fields = signupFields;
-const fieldsState: any = {};
+const fieldsState: {
+  [key: string]: string | boolean | undefined
+}
+  = {};
 
 fields.forEach(field => fieldsState[field.id] = '');
 
 export default function Signup() {
   const [signupState, setSignupState] = useState(fieldsState);
 
-  const handleChange = (e: any) => setSignupState({ ...signupState, [e.target.id]: e.target.value });
+  const handleChange = (e: Event) => setSignupState({ ...signupState, [e.target.id]: e.target.value });
 
-  const handleSubmit = (e: any) => {
+  const handleSubmit = (e: Event) => {
     e.preventDefault();
     console.log(signupState)
     createAccount()
   }
 
   // TODO: handle Signup API Integration here
-  const createAccount = async () => {
+  const createAccount = () => {
     console.log('log user in')
-    await Router.push('/')
+    // await Router.push('/')
   }
 
   return (
@@ -57,9 +61,6 @@ export default function Signup() {
 
           <FormAction handleSubmit={handleSubmit} text="Signup" />
         </div>
-
-
-
       </form>
 
       <DiscordLogin />

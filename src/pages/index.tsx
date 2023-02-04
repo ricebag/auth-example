@@ -2,11 +2,11 @@ import { type NextPage } from "next";
 import { useState } from "react";
 import { signIn, signOut, useSession } from "next-auth/react";
 
-import { default as Layout } from '../components/Layout';
+// import { default as Layout } from '../components/Layout';
 import { api } from "../utils/api";
 
 const Home: NextPage = () => {
-  const hello = api.example.hello.useQuery({ text: "from tRPC" });
+  // const hello = api.example.hello.useQuery({ text: "from tRPC" });
 
   const { data: session, status } = useSession();
 
@@ -49,9 +49,6 @@ const Home: NextPage = () => {
             Login with Discord
           </button>
         )}
-        {/* <div className="pt-10">
-          <GuestbookEntries />
-        </div> */}
         <div className="mt-10">
           <h2>List of active Users</h2>
           <Users />
@@ -110,24 +107,6 @@ const Home: NextPage = () => {
 
 export default Home;
 
-const AuthShowcase: React.FC = () => {
-  const { data: sessionData } = useSession();
-
-  const { data: secretMessage } = api.example.getSecretMessage.useQuery(
-    undefined, // no input
-    { enabled: sessionData?.user !== undefined },
-  );
-
-  return (
-    <div className="flex flex-col items-center justify-center gap-4">
-      <p className="text-center text-2xl text-white">
-        {sessionData && <span>Logged in as {sessionData.user?.name}</span>}
-        {secretMessage && <span> - {secretMessage}</span>}
-      </p>
-    </div>
-  );
-};
-
 const Users = () => {
   const { data: guestbookEntries, isLoading } = api.users.getAll.useQuery();
 
@@ -139,25 +118,6 @@ const Users = () => {
         return (
           <div key={index}>
             <p>{entry.name} - {entry.email} - {entry.id}</p>
-          </div>
-        );
-      })}
-    </div>
-  );
-};
-
-const GuestbookEntries = () => {
-  const { data: guestbookEntries, isLoading } = api.guestbook.getAll.useQuery();
-
-  if (isLoading) return <div>Fetching messages...</div>;
-
-  return (
-    <div className="flex flex-col gap-4">
-      {guestbookEntries?.map((entry, index) => {
-        return (
-          <div key={index}>
-            <p>{entry.message}</p>
-            <span>- {entry.name}</span>
           </div>
         );
       })}

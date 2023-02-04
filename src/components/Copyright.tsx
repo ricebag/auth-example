@@ -1,12 +1,17 @@
+import type { FC, } from 'react'
 import Link from "next/link";
 
-export default (props: any) => (
-  <p variant="body2" color="text.secondary" align="center" {...props}>
-    {'Copyright © '}
-    <Link color="inherit" href="/">
-      Your Website
-    </Link>{' '}
-    {new Date().getFullYear()}
-    {'.'}
-  </p>
+const Copyright: FC = () => (
+  <div className='py-10 flex flex-col items-center'>
+    <p>
+      {'Copyright © '}
+      <Link color="inherit" href="/">
+        Your Website
+      </Link>{' '}
+      {new Date().getFullYear()}
+      {'.'}
+    </p>
+  </div>
 );
+
+export default Copyright

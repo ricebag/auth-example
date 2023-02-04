@@ -6,7 +6,7 @@ const LoginPage: React.FC = () => (
   <div className="bg-slate-100">
     <LoginForm />
 
-    <Copyright className="mt-20" />
+    <Copyright />
   </div>
 );
 

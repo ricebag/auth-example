@@ -1,9 +1,9 @@
 import Link from "next/link"
-import { signIn, signOut, useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 
-import { api } from "../utils/api";
+// import { api } from "../utils/api";
 
-export default function Nav() {
+const Nav = () => {
   const { data: session } = useSession();
 
   // if (!session) {
@@ -11,10 +11,10 @@ export default function Nav() {
   //   return <SignIn />;
   // }
 
-  const { data: secretMessage } = api.example.getSecretMessage.useQuery(
-    undefined, // no input
-    { enabled: session?.user !== undefined },
-  );
+  // const { data: secretMessage } = api.example.getSecretMessage.useQuery(
+  //   undefined, // no input
+  //   { enabled: session?.user !== undefined },
+  // );
 
   console.log({ session })
 
@@ -31,9 +31,9 @@ export default function Nav() {
     //     Join Now
     //   </Link>
 
-      <Link href={'/login'} className="py-2 px-4 text-lg bg-teal-500 text-white rounded-lg font-medium mx-9">
-        Login
-      </Link>
+    <Link href={'/login'} className="py-2 px-4 text-lg bg-teal-500 text-white rounded-lg font-medium mx-9">
+      Login
+    </Link>
     // </ul>
   )
 
@@ -45,3 +45,5 @@ export default function Nav() {
     </nav>
   )
 }
+
+export default Nav
