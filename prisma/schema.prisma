@@ -35,6 +35,13 @@ model Account {
     @@unique([provider, providerAccountId])
 }
 
+model Guestbook {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    name      String
+    message   String   @db.VarChar(100)
+}
+
 model Session {
     id           String   @id @default(cuid())
     sessionToken String   @unique
