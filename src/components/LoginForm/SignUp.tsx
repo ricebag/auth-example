@@ -1,9 +1,8 @@
 import React, { useState } from "react";
-// import Router from "next/router";
+import type { FormEvent, SyntheticEvent } from "react";
 
 import { signupFields } from "../../constants/FormFields"
 import { DiscordLogin, LoginFormHeader, Input, FormAction, } from '..'
-import type { Event } from "../../types/event";
 
 const fields = signupFields;
 const fieldsState: {
@@ -16,9 +15,10 @@ fields.forEach(field => fieldsState[field.id] = '');
 export default function Signup() {
   const [signupState, setSignupState] = useState(fieldsState);
 
-  const handleChange = (e: Event) => setSignupState({ ...signupState, [e.target.id]: e.target.value });
+  const handleChange = (e: FormEvent<HTMLInputElement>): void =>
+    setSignupState({ ...signupState, [e.currentTarget.id]: e.currentTarget.value });
 
-  const handleSubmit = (e: Event) => {
+  const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
     console.log(signupState)
     createAccount()
@@ -46,7 +46,7 @@ export default function Signup() {
               <Input
                 key={field.id}
                 handleChange={handleChange}
-                value={signupState[field.id]}
+                value={signupState[field.id] as string}
                 labelText={field.labelText}
                 labelFor={field.labelFor}
                 id={field.id}
@@ -55,7 +55,6 @@ export default function Signup() {
                 isRequired={field.isRequired}
                 placeholder={field.placeholder}
               />
-
             )
           }
 

@@ -1,7 +1,7 @@
-import type { Event } from "../../types/event";
+import type { FormEventHandler } from "react";
 
 type FormActionProps = {
-  handleSubmit: (e: Event) => void;
+  handleSubmit: FormEventHandler<HTMLButtonElement>
   action?: string;
   text: string;
 }

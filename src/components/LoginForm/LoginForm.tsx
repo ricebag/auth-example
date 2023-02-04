@@ -1,32 +1,28 @@
 import React, { useState } from "react";
-import Router from "next/router";
+import type { FormEvent, SyntheticEvent } from "react";
 
 import { loginFields } from "../../constants/FormFields";
 import { DiscordLogin, Input, FormAction, FormExtra, LoginFormHeader } from "..";
-import type { Event } from "../../types/event";
 
 const fields = loginFields;
-const fieldsState: {
-  [key: string]: string | boolean
-} = {};
+const fieldsState: { [key: string]: string | boolean } = {};
 fields.forEach((field) => fieldsState[field.id] = '');
 
 const LoginPage = () => {
   const [loginState, setLoginState] = useState(fieldsState);
 
-  const handleChange = (e: Event) => {
-    setLoginState({ ...loginState, [e.target.id]: e.target.value })
-  }
+  const handleChange = (e: FormEvent<HTMLInputElement>): void =>
+    setLoginState({ ...loginState, [e.currentTarget.id]: e.currentTarget.value })
 
-  const handleSubmit = async (e: Event) => {
+  const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
-    await authenticateUser();
+    authenticateUser();
   }
 
   // TODO: Handle Login API Integration here
-  const authenticateUser = async () => {
+  const authenticateUser = () => {
     console.log('log user in')
-    await Router.push('/')
+    // await Router.push('/')
   }
 
   return (
@@ -45,7 +41,7 @@ const LoginPage = () => {
               <Input
                 key={field.id}
                 handleChange={handleChange}
-                value={loginState[field.id]}
+                value={loginState[field.id] as string}
                 labelText={field.labelText}
                 labelFor={field.labelFor}
                 id={field.id}
@@ -54,7 +50,6 @@ const LoginPage = () => {
                 isRequired={field.isRequired}
                 placeholder={field.placeholder}
               />
-
             )
           }
         </div>
