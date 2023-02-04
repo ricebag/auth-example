@@ -5,7 +5,7 @@ import { loginFields } from "../../constants/FormFields";
 import { DiscordLogin, Input, FormAction, FormExtra, LoginFormHeader } from "..";
 
 const fields = loginFields;
-let fieldsState: any = {};
+const fieldsState: any = {};
 fields.forEach(field => fieldsState[field.id] = '');
 
 const LoginPage = () => {
@@ -21,9 +21,9 @@ const LoginPage = () => {
   }
 
   // TODO: Handle Login API Integration here
-  const authenticateUser = () => {
+  const authenticateUser = async () => {
     console.log('log user in')
-    Router.push('/')
+    await Router.push('/')
   }
 
   return (

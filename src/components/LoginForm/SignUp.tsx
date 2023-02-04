@@ -5,7 +5,7 @@ import { signupFields } from "../../constants/FormFields"
 import { DiscordLogin, LoginFormHeader, Input, FormAction, } from '..'
 
 const fields = signupFields;
-let fieldsState: any = {};
+const fieldsState: any = {};
 
 fields.forEach(field => fieldsState[field.id] = '');
 
@@ -21,9 +21,9 @@ export default function Signup() {
   }
 
   // TODO: handle Signup API Integration here
-  const createAccount = () => {
+  const createAccount = async () => {
     console.log('log user in')
-    Router.push('/')
+    await Router.push('/')
   }
 
   return (

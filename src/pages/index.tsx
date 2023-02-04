@@ -1,10 +1,8 @@
 import { type NextPage } from "next";
 import { useState } from "react";
-import Head from "next/head";
-import Link from "next/link";
 import { signIn, signOut, useSession } from "next-auth/react";
-import { default as Layout } from '../components/Layout';
 
+import { default as Layout } from '../components/Layout';
 import { api } from "../utils/api";
 
 const Home: NextPage = () => {
@@ -13,7 +11,7 @@ const Home: NextPage = () => {
   const { data: session, status } = useSession();
 
   if (status === "loading") {
-    // create a loading component
+    // TODO: create a loading component
     return <main className="flex flex-col items-center pt-4">Loading...</main>;
   }
 

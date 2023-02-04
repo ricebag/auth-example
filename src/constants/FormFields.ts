@@ -1,3 +1,14 @@
+export type LoginField = {
+  labelText: string;
+  labelFor: string;
+  id: string;
+  name: string;
+  type: string;
+  autoComplete: string;
+  isRequired: boolean;
+  placeholder: string;
+}
+
 const loginFields = [
   {
     labelText: "Email address",
