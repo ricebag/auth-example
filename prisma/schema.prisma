@@ -6,8 +6,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
 }
 
 model Example {
@@ -23,12 +23,12 @@ model Account {
     type              String
     provider          String
     providerAccountId String
-    refresh_token     String?  @db.Text
-    access_token      String?  @db.Text
+    refresh_token     String? @db.Text
+    access_token      String? @db.Text
     expires_at        Int?
     token_type        String?
     scope             String?
-    id_token          String?  @db.Text
+    id_token          String? @db.Text
     session_state     String?
     user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -53,11 +53,46 @@ model Session {
 model User {
     id            String    @id @default(cuid())
     name          String?
+    displayName   String?
     email         String?   @unique
     emailVerified DateTime?
     image         String?
-    accounts      Account[]
-    sessions      Session[]
+    createdAt     DateTime  @default(now())
+    updatedAt     DateTime  @updatedAt
+
+    accounts                   Account[]
+    sessions                   Session[]
+    friends                    Friend[]
+    friendshipRequestsSent     FriendRequest[] @relation("FriendRequestsSent")
+    friendshipRequestsReceived FriendRequest[] @relation("FriendRequestsReceived")
+
+    @@unique([id, name, email, image])
+}
+
+model Friend {
+    id    String @id @default(cuid())
+    users User[]
+}
+
+model FriendRequest {
+    id                  String                  @id @default(cuid())
+    requestSentById     String
+    user1               String
+    user1Email          String
+    user1ProfilePicture String
+    requestSentToId     String
+    user2               String
+    user2Email          String
+    user2ProfilePicture String
+    status              FriendshipRequestStatus @default(value: PENDING)
+    fromId              User?                   @relation("FriendRequestsSent", references: [id, name, email, image], fields: [requestSentById, user1, user1Email, user1ProfilePicture])
+    to                  User?                   @relation("FriendRequestsReceived", references: [id, name, email, image], fields: [requestSentToId, user2, user2Email, user2ProfilePicture])
+}
+
+enum FriendshipRequestStatus {
+    PENDING
+    ACCEPTED
+    REJECTED
 }
 
 model VerificationToken {
