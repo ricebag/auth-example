@@ -19,7 +19,7 @@ const Home: NextPage = () => {
   return (
     <main className="flex flex-col items-center">
       <h1 className="text-3xl pt-4">Guestbook</h1>
-      <div>
+      <div className="w-full">
         <Users />
       </div>
     </main>

@@ -7,48 +7,39 @@ type Props = {
 }
 
 const FriendCard = ({ users, onClick }: Props) => {
-  // const users = [
-  //   { name: 'Kevin Durant', id: 1, email: '1@email.com', image: 'https://cdn.discordapp.com/avatars/540091307075305483/4315396845e598da47beb6943e98b08d.png' },
-  //   { name: 'James Harden', id: 2, email: '2@email.com', image: 'https://cdn.discordapp.com/avatars/540091307075305483/4315396845e598da47beb6943e98b08d.png' },
-  //   { name: 'Michael Jordan', id: 3, email: '3@email.com', image: 'https://cdn.discordapp.com/avatars/540091307075305483/4315396845e598da47beb6943e98b08d.png' },
-  //   { name: 'Lebron James', id: 4, email: '4@email.com', image: 'https://cdn.discordapp.com/avatars/540091307075305483/4315396845e598da47beb6943e98b08d.png' },
-  // ]
-
-  console.log({ users })
-  if (!users || !users?.length) return <></>
-
+  console.log(users[0]?.image)
   const userDetails = users.map((user: User, key: number) => (
-    <div key={key} className="shadow-lg flex cursor-pointer my-1 hover:bg-blue-lightest rounded min-w-full">
+    <div key={key} className="shadow-lg flex p-5 border-8 cursor-pointer my-1 hover:bg-blue-lightest rounded min-w-full">
       <Image
         className="rounded-full"
         alt=""
         width='80'
         height='80'
-        src="https://cdn.discordapp.com/avatars/540091307075305483/4315396845e598da47beb6943e98b08d.png"
+        src={user.image ? user.image : 'https://cdn.discordapp.com/embed/avatars/0.png'}
       />
-      <div className="w-4/5 h-10 py-3 px-1">
-        <p className="hover:text-blue-dark">{user.name}</p>
+      <div className="w-4/5 h-10 py-3 px-3">
+        <h2 className="hover:text-blue-dark text-xl font-medium">{user.name}</h2>
         <p className="hover:text-blue-dark">{user.email}</p>
       </div>
 
-      <button onClick={() => onClick(user)}>+</button>
+      <button onClick={() => onClick(user)} className="py-2 px-4 text-lg bg-teal-500 text-white rounded-3xl font-medium">Add Friend</button>
     </div>
   ))
 
 
   return (
-    <div className="shadow-lg rounded-lg w-full max-w-screen-xl mx-auto p-6">
-      <div className="flex-grow">
-        <h3 className="font-normal px-2 py-3 leading-tight">Contacts</h3>
+    <div className="shadow-lg rounded-lg w-4/5 max-w-screen-xl mx-auto p-6">
+      <h3 className="font-normal px-2 py-3 leading-tight">Contacts</h3>
 
-        <input type="text" placeholder="Search teams or members"
-          className="my-2 w-full text-sm bg-grey-light text-grey-darkest rounded h-10 p-3 focus:outline-none" />
+      {/*
+      // add ability to search users
+      <input type="text" placeholder="Search teams or members"
+        className="my-2 w-full text-sm bg-grey-light text-grey-darkest rounded h-10 p-3 focus:outline-none" /> */}
 
-        <div className="w-full">
+      <div className="w-full">
 
-          {userDetails}
+        {userDetails}
 
-        </div>
       </div>
     </div>
   )
