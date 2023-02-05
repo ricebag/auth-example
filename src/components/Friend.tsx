@@ -1,14 +1,12 @@
-import { User } from "@prisma/client";
+import type { User } from "@prisma/client";
 import Image from "next/image"
-import { FC } from "react";
 
 type Props = {
   users: User[]
   onClick: (user: User) => void
 }
 
-export default ({ users, onClick }: Props) => {
-
+const FriendCard = ({ users, onClick }: Props) => {
   // const users = [
   //   { name: 'Kevin Durant', id: 1, email: '1@email.com', image: 'https://cdn.discordapp.com/avatars/540091307075305483/4315396845e598da47beb6943e98b08d.png' },
   //   { name: 'James Harden', id: 2, email: '2@email.com', image: 'https://cdn.discordapp.com/avatars/540091307075305483/4315396845e598da47beb6943e98b08d.png' },
@@ -55,3 +53,5 @@ export default ({ users, onClick }: Props) => {
     </div>
   )
 }
+
+export default FriendCard
