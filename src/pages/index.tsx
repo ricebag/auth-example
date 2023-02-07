@@ -4,7 +4,7 @@ import { useSession } from "next-auth/react";
 // import { default as Layout } from '../components/Layout';
 import type { User } from "@prisma/client";
 import { api } from "../utils/api";
-import { FriendCard } from "../components";
+import { Contacts } from "../components";
 
 const Home: NextPage = () => {
   // const hello = api.example.hello.useQuery({ text: "from tRPC" });
@@ -47,18 +47,41 @@ const Users = () => {
 
   return (
     <div className="flex flex-col gap-2 mt-5">
-      {users ? <FriendCard users={users} onClick={addFriend} /> : <></>}
+      {
+        users ? <Contacts users={users} sentFriendRequests={userData?.friendshipRequestsSent} onClick={addFriend} /> : <></>
+      }
 
 
-      <h2>friendshipRequestsSent</h2>
-      {userData?.friendshipRequestsSent?.map((friend, index) => (
+      <div className="shadow-lg rounded-lg w-4/5 max-w-screen-xl mx-auto p-6">
+        <h3 className="font-normal px-2 py-3 leading-tight">Friend Requests Received</h3>
+        {userData?.friendshipRequestsReceived?.map((friend, index) => (
+          <div key={index}>
+            <p>{friend.user1}</p>
+            <p>{friend.user1Email}</p>
+            <p>{friend.requestSentById}</p>
+            <p>{friend.user1ProfilePicture}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* <h2>friendshipRequestsReceived</h2>
+      {userData?.friendshipRequestsReceived?.map((friend, index) => (
         <div key={index}>
-          <p>{friend.user2}</p>
-          <p>{friend.user2Email}</p>
-          <p>{friend.requestSentToId}</p>
-          <p>{friend.user2ProfilePicture}</p>
+          <p>{friend.user1} - {friend.user1Email} - {friend.requestSentById} - {friend.user1ProfilePicture}</p>
         </div>
-      ))}
+      ))} */}
+
+      {/* <div className="shadow-lg rounded-lg w-4/5 max-w-screen-xl mx-auto p-6">
+        <h3 className="font-normal px-2 py-3 leading-tight">Current Friend Requests</h3>
+        {userData?.friendshipRequestsSent?.map((friend, index) => (
+          <div key={index}>
+            <p>{friend.user2}</p>
+            <p>{friend.user2Email}</p>
+            <p>{friend.requestSentToId}</p>
+            <p>{friend.user2ProfilePicture}</p>
+          </div>
+        ))}
+      </div> */}
 
 
       {/* <div className="bg-gray-50 min-h-screen flex items-center justify-center px-16">

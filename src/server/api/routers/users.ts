@@ -1,3 +1,4 @@
+import { FriendshipRequestStatus } from "@prisma/client";
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
@@ -10,21 +11,8 @@ export const userRouter = createTRPCRouter({
           // friendshipRequestsSent:
         },
         include: {
-          friends: {
-            select: {
-              id: true,
-            },
-          },
-          friendshipRequestsSent: {
-            select: {
-              id: true,
-            },
-          },
-          friendshipRequestsReceived: {
-            select: {
-              id: true,
-            },
-          }
+          friendshipRequestsSent: {},
+          friendshipRequestsReceived: {}
         },
         orderBy: {
           name: "desc",
@@ -42,17 +30,18 @@ export const userRouter = createTRPCRouter({
           id: ctx.session.user.id
         },
         include: {
-          friends: {
-            select: {
-              id: true,
+          friendshipRequestsSent: {
+            where: {
+              requestSentById: ctx.session.user.id,
+              status: "PENDING"
             },
           },
-          friendshipRequestsSent: {},
-          friendshipRequestsReceived: {}
-          //   where: {
-          //     requestSentToId: ctx.session.user.id,
-          //     status: "PENDING"
-          //   },
+          friendshipRequestsReceived: {
+            where: {
+              requestSentToId: ctx.session.user.id,
+              status: "PENDING"
+            },
+          }
         }
       });
     } catch (error) {
@@ -72,7 +61,7 @@ export const userRouter = createTRPCRouter({
         const { session: { user: { id, name, email, image } } } = ctx
         if (!name || !email || !image) throw new Error("Invalid user session")
 
-        await ctx.prisma.friendRequest.create({
+        await ctx.prisma.friendship.create({
           data: {
             requestSentById: id,
             user1: name,
@@ -83,6 +72,25 @@ export const userRouter = createTRPCRouter({
             user2: input.name,
             user2Email: input.email,
             user2ProfilePicture: input.profilePicture,
+          },
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    }),
+
+  acceptFriendRequest: protectedProcedure
+    .input(z.object({
+      id: z.string(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      try {
+        await ctx.prisma.friendship.update({
+          where: {
+            id: input.id,
+          },
+          data: {
+            status: FriendshipRequestStatus.ACCEPTED
           },
         });
       } catch (error) {

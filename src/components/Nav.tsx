@@ -9,7 +9,7 @@ const Nav = () => {
   const Buttons = !!session ? (
     <button
       className="py-2 px-4 text-lg bg-teal-500 text-white rounded-lg font-medium mx-9"
-      onClick={() => void signOut()}
+      onClick={() => void signOut({ callbackUrl: '/login' })}
     >
       Sign out
     </button>

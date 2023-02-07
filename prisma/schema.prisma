@@ -62,19 +62,14 @@ model User {
 
     accounts                   Account[]
     sessions                   Session[]
-    friends                    Friend[]
-    friendshipRequestsSent     FriendRequest[] @relation("FriendRequestsSent")
-    friendshipRequestsReceived FriendRequest[] @relation("FriendRequestsReceived")
+    friendshipRequestsSent     Friendship[]   @relation("FriendRequestsSent")
+    friendshipRequestsReceived Friendship[]   @relation("FriendRequestsReceived")
+    peopleEvents               PeopleEvents[]
 
     @@unique([id, name, email, image])
 }
 
-model Friend {
-    id    String @id @default(cuid())
-    users User[]
-}
-
-model FriendRequest {
+model Friendship {
     id                  String                  @id @default(cuid())
     requestSentById     String
     user1               String
@@ -87,6 +82,31 @@ model FriendRequest {
     status              FriendshipRequestStatus @default(value: PENDING)
     fromId              User?                   @relation("FriendRequestsSent", references: [id, name, email, image], fields: [requestSentById, user1, user1Email, user1ProfilePicture])
     to                  User?                   @relation("FriendRequestsReceived", references: [id, name, email, image], fields: [requestSentToId, user2, user2Email, user2ProfilePicture])
+}
+
+model Event {
+    id           String         @id @default(cuid())
+    title        String
+    allDay       Boolean
+    start        DateTime
+    end          DateTime
+    createdAt    DateTime       @default(now())
+    updatedAt    DateTime       @updatedAt
+    peopleEvents PeopleEvents[] @relation("events")
+
+    address     String?
+    postcode    String?
+    countryCode String?
+}
+
+model PeopleEvents {
+    id      String @id @default(cuid())
+    eventId String
+    events  Event? @relation("events", fields: [eventId], references: [id])
+    userId  String
+    user    User   @relation(fields: [userId], references: [id])
+
+    @@unique([eventId, userId])
 }
 
 enum FriendshipRequestStatus {
