@@ -36,8 +36,6 @@ export const eventRouter = createTRPCRouter({
         const { id, title, start, end, allDay } = input
         if (!id || !title || !start || !end || !allDay) throw new Error('Please provide all of the required data to create an event')
 
-        console.log('\n\n', { id, title, start, end, allDay }, '\n\n')
-
         await ctx.prisma.event.create({
           data: {
             id,

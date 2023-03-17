@@ -1,5 +1,6 @@
 import { type NextPage } from "next";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
 
 // import { default as Layout } from '../components/Layout';
 import type { User } from "@prisma/client";
@@ -7,9 +8,12 @@ import { api } from "../utils/api";
 import { Contacts } from "../components";
 
 const Home: NextPage = () => {
-  // const hello = api.example.hello.useQuery({ text: "from tRPC" });
+  const router = useRouter();
+  const { status, data: session } = useSession();
 
-  const { status } = useSession();
+  if (!session) {
+    router.push('/login')
+  }
 
   if (status === "loading") {
     // TODO: create a loading component
@@ -39,8 +43,6 @@ const Users = () => {
     email: userDetails.email as string,
     profilePicture: userDetails.image as string,
   })
-
-  console.log({ userData, loadingUserData })
 
   if (loadingUserData) return <div>Fetching Users Data...</div>;
   if (isLoading) return <div>Fetching Users...</div>;

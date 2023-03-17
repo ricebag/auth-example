@@ -3,12 +3,14 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import listPlugin from '@fullcalendar/list'
-
-
-import { Copyright, } from '../components'
-import { api } from "../utils/api";
+import { useRouter } from 'next/router'
 import type { NextPage } from "next";
 import { type EventClickArg, formatDate } from 'fullcalendar'
+
+import { Copyright, Modal, } from '../components'
+import { api } from "../utils/api";
+import { useSession } from 'next-auth/react'
+import { useState } from 'react'
 
 type Selected = {
   view: {
@@ -28,15 +30,41 @@ type Selected = {
   allDay: boolean
 }
 
+type SelectedDate = {
+  id: String;
+  startStr: String;
+  allDay: boolean
+}
+
 const Calendar: NextPage = () => {
-  // const events = [{ id: 1, title: 'Film night' }]
+  // const router = useRouter();
+  // const { data: session } = useSession();
+
+  // if (!session) {
+  //   router.push('/login')
+  // }
+
+  const [showModal, toggleModal] = useState(false)
+  const [selectedDate, setSelectedDate] = useState()
+
   const { data: events } = api.events.getEventsByUserId.useQuery()
   const createEvent = api.events.createEvent.useMutation()
   const deleteEvent = api.events.deleteEvent.useMutation()
 
-  console.log({ events })
+  // const handleSubmit = () => {
+  //   if (title) {
+  //     const id = `${selected.startStr}-${title}`
+  //     const start = selected.startStr
+  //     const end = selected.endStr
+  //     const allDay = selected.allDay
+
+  //     calendarApi.addEvent({ id, title, start, end, allDay })
+  //     createEvent.mutate({ id, title, start: new Date(start), end: new Date(end), allDay })
+  //   }
+  // }
 
   const handDateClick = (selected: Selected) => {
+    toggleModal(!showModal)
     const title = prompt('Please enter a new title for your event') as string
     const calendarApi = selected.view.calendar;
     calendarApi.unselect();
@@ -54,12 +82,10 @@ const Calendar: NextPage = () => {
   }
 
   const handleEventClick = (selected: EventClickArg) => {
-    // TODO: needs to trigger modal
     if (
       window.confirm(`Are you sur eyou want to delete the event ${selected.event.title}`)
     ) {
-      // TODO: Remove from the db
-      console.log({ selectedId: selected.event.id })
+      // TODO: refresh the Calendar with the latest data
       deleteEvent.mutate({ id: selected.event.id })
     }
   }
@@ -114,6 +140,9 @@ const Calendar: NextPage = () => {
           />
         </div>
       </div>
+
+
+      <Modal isVisible={showModal} onClose={() => toggleModal(!showModal)} />
       <Copyright />
     </div>
   );

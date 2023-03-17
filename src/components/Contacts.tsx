@@ -13,7 +13,8 @@ const Contacts = ({ users, sentFriendRequests, recievedFriendRequests, onClick }
     const existingRequest = sentFriendRequests?.filter(({ requestSentToId }: Friendship) => requestSentToId === user.id) || []
     const awaitingResponse = recievedFriendRequests?.filter(({ requestSentById }: Friendship) => requestSentById === user.id) || []
 
-    console.log({ user, existingRequest, awaitingResponse })
+    // console.log({ user, existingRequest, awaitingResponse })
+    
     // const Button = existingRequest.length && awaitingResponse.length
     //   ? (api.users.acceptFriendRequest({ id: existingRequest[0]?.id }))
     //   : existingRequest.length
