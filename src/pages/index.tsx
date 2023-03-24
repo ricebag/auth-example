@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react";
 // import { default as Layout } from '../components/Layout';
 import { api } from "../utils/api";
 import { PendingFriendRequests, Friends, Contacts } from "../components";
-import { Friendship, User } from "@prisma/client";
+import type { Friendship, User } from "@prisma/client";
 
 const Home: NextPage = () => {
   // const router = useRouter();
@@ -33,7 +33,6 @@ const Home: NextPage = () => {
 export default Home;
 
 const Users = ({ userId }: { userId: string | undefined }) => {
-  console.log({ userId })
   if (!userId) return <></>
 
   const { data: users, isLoading: loadingUsers } = api.users.getAll.useQuery();
@@ -54,19 +53,16 @@ const Users = ({ userId }: { userId: string | undefined }) => {
 
   if (loadingFriends) return <div>Fetching Friends...</div>;
   if (loadingUsers) return <div>Fetching Users...</div>;
-  if (!friendships?.length) return <></>
 
   const usersNotFriends = users?.filter((user: User) => {
     if (user.id === userId) return false
 
-    return !friendships.filter(
+    return !friendships?.filter(
       (friendship: Friendship) =>
         friendship.requestSentById === user.id ||
         friendship.requestSentToId === user.id
     ).length
   })
-
-  console.log({ friendships, usersNotFriends, users })
 
   return (
     <div className="flex flex-col gap-2 mt-5">
@@ -84,7 +80,6 @@ const Users = ({ userId }: { userId: string | undefined }) => {
       />
 
       <Contacts
-        userId={userId}
         users={usersNotFriends}
         addFriend={addFriend}
       />

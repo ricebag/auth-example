@@ -22,8 +22,7 @@ type PendingProps = {
   declineFriendRequest: DeclineFriendRequest;
 }
 
-type UsersProps = {
-  userId: string;
+type ContactProps = {
   users?: User[];
   addFriend: AddFriend
 }
@@ -37,7 +36,6 @@ const PendingFriendRequests = ({ userId, friendships, acceptFriendRequest, decli
     const name = sentByUser ? friendship.user2 : friendship.user1
     const email = sentByUser ? friendship.user2Email : friendship.user1Email
 
-    console.log('Pending Friend Requests', { friendship })
     return (
       <div key={key} className="flex p-5 border-2 cursor-pointer my-1 hover:bg-blue-lightest rounded min-w-full">
         <Image
@@ -91,7 +89,6 @@ const Friends = ({ userId, friendships, removeFriend }: FriendsProps) => {
     const name = sentByUser ? friendship.user2 : friendship.user1
     const email = sentByUser ? friendship.user2Email : friendship.user1Email
 
-    console.log('Friends', { friendship })
     return (
       <div key={key} className="flex p-5 border-2 cursor-pointer my-1 hover:bg-blue-lightest rounded min-w-full">
         <Image
@@ -138,7 +135,7 @@ const Friends = ({ userId, friendships, removeFriend }: FriendsProps) => {
   )
 }
 
-const Contacts = ({ userId, users, addFriend }: UsersProps) => {
+const Contacts = ({ users, addFriend }: ContactProps) => {
   const [userInput, updateUserInput] = useState('')
 
   const filteredUsers = users?.filter((user: User) =>
@@ -146,7 +143,6 @@ const Contacts = ({ userId, users, addFriend }: UsersProps) => {
     user?.email?.toLowerCase().includes(userInput.toLowerCase().trim()))
 
   const friends = filteredUsers?.map((user: User, key: number) => {
-    console.log('Contacts', { user })
     return (
       <div key={key} className="flex p-5 border-2 cursor-pointer my-1 hover:bg-blue-lightest rounded min-w-full">
         <Image
