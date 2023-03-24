@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react";
 // import { default as Layout } from '../components/Layout';
 import { api } from "../utils/api";
 import { PendingFriendRequests, Friends, Contacts } from "../components";
-import { Friendship, User } from "@prisma/client";
+import type { Friendship, User } from "@prisma/client";
 
 const Home: NextPage = () => {
   // const router = useRouter();
@@ -80,7 +80,6 @@ const Users = ({ userId }: { userId: string | undefined }) => {
       />
 
       <Contacts
-        userId={userId}
         users={usersNotFriends}
         addFriend={addFriend}
       />

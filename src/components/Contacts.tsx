@@ -22,8 +22,7 @@ type PendingProps = {
   declineFriendRequest: DeclineFriendRequest;
 }
 
-type UsersProps = {
-  userId: string;
+type ContactProps = {
   users?: User[];
   addFriend: AddFriend
 }
@@ -136,7 +135,7 @@ const Friends = ({ userId, friendships, removeFriend }: FriendsProps) => {
   )
 }
 
-const Contacts = ({ userId, users, addFriend }: UsersProps) => {
+const Contacts = ({ users, addFriend }: ContactProps) => {
   const [userInput, updateUserInput] = useState('')
 
   const filteredUsers = users?.filter((user: User) =>
