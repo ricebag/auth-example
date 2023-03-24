@@ -3,13 +3,13 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import listPlugin from '@fullcalendar/list'
-import { useRouter } from 'next/router'
+// import { useRouter } from 'next/router'
 import type { NextPage } from "next";
 import { type EventClickArg, formatDate } from 'fullcalendar'
 
 import { Copyright, Modal, } from '../components'
 import { api } from "../utils/api";
-import { useSession } from 'next-auth/react'
+// import { useSession } from 'next-auth/react'
 import { useState } from 'react'
 
 type Selected = {
@@ -30,11 +30,11 @@ type Selected = {
   allDay: boolean
 }
 
-type SelectedDate = {
-  id: String;
-  startStr: String;
-  allDay: boolean
-}
+// type SelectedDate = {
+//   id: string;
+//   startStr: string;
+//   allDay: boolean
+// }
 
 const Calendar: NextPage = () => {
   // const router = useRouter();
@@ -45,7 +45,7 @@ const Calendar: NextPage = () => {
   // }
 
   const [showModal, toggleModal] = useState(false)
-  const [selectedDate, setSelectedDate] = useState()
+  // const [selectedDate, setSelectedDate] = useState()
 
   const { data: events } = api.events.getEventsByUserId.useQuery()
   const createEvent = api.events.createEvent.useMutation()

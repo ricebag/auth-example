@@ -1,4 +1,4 @@
-import { MouseEvent } from "react"
+import type { MouseEvent } from "react"
 import EventForm from "./EventForm"
 
 type Props = {
@@ -6,7 +6,7 @@ type Props = {
   onClose: () => void;
 }
 
-const Modal = ({ isVisible, onClose }: { isVisible: boolean, onClose: () => void }) => {
+const Modal = ({ isVisible, onClose }: Props) => {
   if (!isVisible) return <></>
 
   const handleClose = (e: MouseEvent<HTMLButtonElement & HTMLDivElement>) => {

@@ -1,5 +1,6 @@
-import { FormEvent, useState } from "react"
+import { useState, } from "react"
 import { FormAction, Input } from "."
+import type {FormEvent, MouseEvent} from "react"
 
 enum fields {
   name = 'name',
@@ -12,10 +13,10 @@ const formFields = {
 }
 
 type Props = {
-  handleSubmit: () => void
+  handleSubmit: (e: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => void
 }
 
-const EventForm = ({ handleSubmit}: Props) => {
+const EventForm = ({ handleSubmit }: Props) => {
   const [state, updateState] = useState(formFields)
 
   const handleChange = (e: FormEvent<HTMLInputElement>): void =>
