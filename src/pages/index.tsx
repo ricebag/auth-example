@@ -33,6 +33,7 @@ const Home: NextPage = () => {
 export default Home;
 
 const Users = ({ userId }: { userId: string | undefined }) => {
+  console.log({ userId })
   if (!userId) return <></>
 
   const { data: users, isLoading: loadingUsers } = api.users.getAll.useQuery();

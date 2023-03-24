@@ -38,7 +38,7 @@ const PendingFriendRequests = ({ userId, friendships, acceptFriendRequest, decli
     const email = sentByUser ? friendship.user2Email : friendship.user1Email
 
     return (
-      <div key={key} className="shadow-lg flex p-5 border-8 cursor-pointer my-1 hover:bg-blue-lightest rounded min-w-full">
+      <div key={key} className="flex p-5 border-2 cursor-pointer my-1 hover:bg-blue-lightest rounded min-w-full">
         <Image
           className="rounded-full"
           alt=""
@@ -91,7 +91,7 @@ const Friends = ({ userId, friendships, removeFriend }: FriendsProps) => {
     const email = sentByUser ? friendship.user2Email : friendship.user1Email
 
     return (
-      <div key={key} className="shadow-lg flex p-5 border-8 cursor-pointer my-1 hover:bg-blue-lightest rounded min-w-full">
+      <div key={key} className="flex p-5 border-2 cursor-pointer my-1 hover:bg-blue-lightest rounded min-w-full">
         <Image
           className="rounded-full"
           alt=""
@@ -145,7 +145,7 @@ const Contacts = ({ userId, users, addFriend }: UsersProps) => {
 
   const friends = filteredUsers?.map((user: User, key: number) => {
     return (
-      <div key={key} className="shadow-lg flex p-5 border-8 cursor-pointer my-1 hover:bg-blue-lightest rounded min-w-full">
+      <div key={key} className="flex p-5 border-2 cursor-pointer my-1 hover:bg-blue-lightest rounded min-w-full">
         <Image
           className="rounded-full"
           alt=""
