@@ -6,10 +6,6 @@ export const userRouter = createTRPCRouter({
   getAll: protectedProcedure.query(async ({ ctx }) => {
     try {
       return await ctx.prisma.user.findMany({
-        where: {
-          id: { not: ctx.session.user.id },
-          // friendshipRequestsSent:
-        },
         include: {
           friendshipRequestsSent: {},
           friendshipRequestsReceived: {}

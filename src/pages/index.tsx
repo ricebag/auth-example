@@ -4,8 +4,8 @@ import { useSession } from "next-auth/react";
 
 // import { default as Layout } from '../components/Layout';
 import { api } from "../utils/api";
-import { Contacts } from "../components";
-import { PendingFriendRequests } from "../components/Contacts";
+import { PendingFriendRequests, Friends, Contacts } from "../components";
+import { Friendship, User } from "@prisma/client";
 
 const Home: NextPage = () => {
   // const router = useRouter();
@@ -35,29 +35,55 @@ export default Home;
 const Users = ({ userId }: { userId: string | undefined }) => {
   if (!userId) return <></>
 
-  const { data: userData, isLoading: loadingUserData } = api.users.getFriends.useQuery();
+  const { data: users, isLoading: loadingUsers } = api.users.getAll.useQuery();
+  const { data: friendships, isLoading: loadingFriends } = api.users.getFriends.useQuery();
+  const createFriendRequest = api.users.addFriend.useMutation()
   const accFriendRequest = api.users.acceptFriendRequest.useMutation()
   const decFriendRequest = api.users.declineFriendRequest.useMutation()
+
+  const addFriend = (userDetails: User) => createFriendRequest.mutate({
+    userId: userDetails.id,
+    name: userDetails.name as string,
+    email: userDetails.email as string,
+    profilePicture: userDetails.image as string,
+  })
 
   const acceptFriendRequest = (id: string) => accFriendRequest.mutate({ id })
   const declineFriendRequest = (id: string) => decFriendRequest.mutate({ id })
 
-  if (loadingUserData) return <div>Fetching Users Data...</div>;
-  if (!userData?.length) return <></>
+  if (loadingFriends) return <div>Fetching Friends...</div>;
+  if (loadingUsers) return <div>Fetching Users...</div>;
+  if (!friendships?.length) return <></>
+
+  const usersNotFriends = users?.filter((user: User) => {
+    if (user.id === userId) return false
+
+    return !friendships.filter(
+      (friendship: Friendship) =>
+        friendship.requestSentById === user.id ||
+        friendship.requestSentToId === user.id
+    ).length
+  })
 
   return (
     <div className="flex flex-col gap-2 mt-5">
-      <Contacts
+      <Friends
         userId={userId}
-        friendships={userData}
+        friendships={friendships}
         removeFriend={declineFriendRequest}
       />
 
       <PendingFriendRequests
         userId={userId}
-        friendships={userData}
+        friendships={friendships}
         acceptFriendRequest={acceptFriendRequest}
         declineFriendRequest={declineFriendRequest}
+      />
+
+      <Contacts
+        userId={userId}
+        users={usersNotFriends}
+        addFriend={addFriend}
       />
     </div>
   );
