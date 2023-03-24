@@ -66,6 +66,8 @@ const Users = ({ userId }: { userId: string | undefined }) => {
     ).length
   })
 
+  console.log({ friendships, usersNotFriends, users })
+
   return (
     <div className="flex flex-col gap-2 mt-5">
       <Friends
