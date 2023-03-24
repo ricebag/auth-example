@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import type { FormEvent, SyntheticEvent } from "react";
 
 import { loginFields } from "../../constants/FormFields";
-import { DiscordLogin, Input, FormAction, FormExtra, LoginFormHeader } from "..";
+import { DiscordLogin, GoogleLogin, Input, FormAction, FormExtra, LoginFormHeader } from "..";
 
 const fields = loginFields;
 const fieldsState: { [key: string]: string | boolean } = {};
@@ -60,6 +60,7 @@ const LoginPage = () => {
       </form>
 
       <DiscordLogin />
+      <GoogleLogin />
     </div>
   );
 };
