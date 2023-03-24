@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import type { FormEvent, SyntheticEvent } from "react";
 
 import { signupFields } from "../../constants/FormFields"
-import { DiscordLogin, LoginFormHeader, Input, FormAction, } from '..'
+import { DiscordLogin, GoogleLogin, LoginFormHeader, Input, FormAction, } from '..'
 
 const fields = signupFields;
 const fieldsState: {
@@ -63,6 +63,7 @@ export default function Signup() {
       </form>
 
       <DiscordLogin />
+      <GoogleLogin />
     </div>
   )
 }

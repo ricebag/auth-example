@@ -25,23 +25,12 @@ export const userRouter = createTRPCRouter({
 
   getFriends: protectedProcedure.query(async ({ ctx }) => {
     try {
-      return await ctx.prisma.user.findUnique({
+      return await ctx.prisma.friendship.findMany({
         where: {
-          id: ctx.session.user.id
-        },
-        include: {
-          friendshipRequestsSent: {
-            where: {
-              requestSentById: ctx.session.user.id,
-              status: "PENDING"
-            },
-          },
-          friendshipRequestsReceived: {
-            where: {
-              requestSentToId: ctx.session.user.id,
-              status: "PENDING"
-            },
-          }
+          OR: [
+            { requestSentById: ctx.session.user.id, },
+            { requestSentToId: ctx.session.user.id, }
+          ]
         }
       });
     } catch (error) {
@@ -91,6 +80,25 @@ export const userRouter = createTRPCRouter({
           },
           data: {
             status: FriendshipRequestStatus.ACCEPTED
+          },
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    }),
+
+  declineFriendRequest: protectedProcedure
+    .input(z.object({
+      id: z.string(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      try {
+        await ctx.prisma.friendship.update({
+          where: {
+            id: input.id,
+          },
+          data: {
+            status: FriendshipRequestStatus.REJECTED
           },
         });
       } catch (error) {
