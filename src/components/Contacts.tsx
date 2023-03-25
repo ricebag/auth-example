@@ -3,31 +3,45 @@ import Image from "next/image"
 import { useState } from "react";
 import type { FormEvent } from 'react';
 
+import { api } from "../utils/api";
 import { Input } from "./LoginForm";
 
-type AddFriend = (user: User) => void
+type RefetchData = () => void
 type AcceptFriendRequest = (id: string) => void
 type DeclineFriendRequest = (id: string) => void
 
 type FriendsProps = {
   userId: string;
   friendships?: Friendship[];
-  removeFriend: DeclineFriendRequest;
+  refetchData: RefetchData;
 }
 
 type PendingProps = {
   userId: string;
   friendships?: Friendship[];
-  acceptFriendRequest: AcceptFriendRequest;
-  declineFriendRequest: DeclineFriendRequest;
+  refetchData: RefetchData;
 }
 
 type ContactProps = {
   users?: User[];
-  addFriend: AddFriend
+  refetchData: RefetchData;
 }
 
-const PendingFriendRequests = ({ userId, friendships, acceptFriendRequest, declineFriendRequest }: PendingProps) => {
+const PendingFriendRequests = ({ userId, friendships, refetchData }: PendingProps) => {
+  const { mutateAsync: decFriendReq, isLoading: isLoadingAcc } = api.users.declineFriendRequest.useMutation()
+  const { mutateAsync: accFriendReq, isLoading: isLoadingDec } = api.users.acceptFriendRequest.useMutation()
+  const isLoading = isLoadingAcc || isLoadingDec
+
+  const acceptFriendRequest = async (id: string) => {
+    await accFriendReq({ id })
+    refetchData()
+  }
+
+  const declineFriendRequest = async (id: string) => {
+    await decFriendReq({ id })
+    refetchData()
+  }
+
   const friends = friendships?.map((friendship: Friendship, key: number) => {
     if (friendship.status === 'REJECTED' || friendship.status === 'ACCEPTED') return null
 
@@ -54,8 +68,16 @@ const PendingFriendRequests = ({ userId, friendships, acceptFriendRequest, decli
           sentByUser
             ? <button disabled className="py-2 px-4 text-lg bg-slate-300 text-white rounded-3xl font-medium">Pending...</button>
             : <>
-              <button onClick={() => acceptFriendRequest(friendship.id)} className="py-2 px-4 text-lg bg-teal-500 text-white rounded-3xl font-medium">Accept</button>
-              <button onClick={() => declineFriendRequest(friendship.id)} className="py-2 px-4 text-lg bg-slate-300 text-white rounded-3xl font-medium">Decline</button>
+              <button
+                disabled={isLoading}
+                onClick={() => acceptFriendRequest(friendship.id)}
+                className="py-2 px-4 text-lg bg-teal-500 text-white rounded-3xl font-medium"
+              >Accept</button>
+              <button
+                disabled={isLoading}
+                onClick={() => declineFriendRequest(friendship.id)}
+                className="py-2 px-4 text-lg bg-slate-300 text-white rounded-3xl font-medium"
+              >Decline</button>
             </>}
       </div>
     )
@@ -73,8 +95,14 @@ const PendingFriendRequests = ({ userId, friendships, acceptFriendRequest, decli
   )
 }
 
-const Friends = ({ userId, friendships, removeFriend }: FriendsProps) => {
+const Friends = ({ userId, friendships, refetchData }: FriendsProps) => {
   const [userInput, updateUserInput] = useState('')
+  const { mutateAsync, isLoading } = api.users.declineFriendRequest.useMutation()
+
+  const removeFriend = async (id: string) => {
+    await mutateAsync({ id })
+    refetchData()
+  }
 
   const filteredFriendships = friendships?.filter((friendship) =>
     friendship.user1.toLowerCase().includes(userInput.toLowerCase().trim()) ||
@@ -104,6 +132,7 @@ const Friends = ({ userId, friendships, removeFriend }: FriendsProps) => {
         </div>
 
         <button
+          disabled={isLoading}
           onClick={() => removeFriend(friendship.id)}
           className="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
         >Remove</button>
@@ -135,8 +164,19 @@ const Friends = ({ userId, friendships, removeFriend }: FriendsProps) => {
   )
 }
 
-const Contacts = ({ users, addFriend }: ContactProps) => {
+const Contacts = ({ users, refetchData }: ContactProps) => {
   const [userInput, updateUserInput] = useState('')
+  const { mutateAsync, isLoading } = api.users.addFriend.useMutation()
+
+  const addFriend = async (userDetails: User) => {
+    await mutateAsync({
+      userId: userDetails.id,
+      name: userDetails.name as string,
+      email: userDetails.email as string,
+      profilePicture: userDetails.image as string,
+    })
+    refetchData()
+  }
 
   const filteredUsers = users?.filter((user: User) =>
     user?.name?.toLowerCase().includes(userInput.toLowerCase().trim()) ||
@@ -159,6 +199,7 @@ const Contacts = ({ users, addFriend }: ContactProps) => {
 
 
         <button
+          disabled={isLoading}
           onClick={() => addFriend(user)}
           className="py-2 px-4 text-lg bg-teal-500 text-white rounded-3xl font-medium"
         >Add Friend</button>
