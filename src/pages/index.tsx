@@ -35,21 +35,13 @@ export default Home;
 const Users = ({ userId }: { userId: string | undefined }) => {
   if (!userId) return <></>
 
-  const { data: users, isLoading: loadingUsers } = api.users.getAll.useQuery();
-  const { data: friendships, isLoading: loadingFriends } = api.users.getFriends.useQuery();
-  const createFriendRequest = api.users.addFriend.useMutation()
-  const accFriendRequest = api.users.acceptFriendRequest.useMutation()
-  const decFriendRequest = api.users.declineFriendRequest.useMutation()
+  const { data: users, isLoading: loadingUsers, refetch: refetchUsers } = api.users.getAll.useQuery();
+  const { data: friendships, isLoading: loadingFriends, refetch: refetchFriends } = api.users.getFriends.useQuery();
 
-  const addFriend = (userDetails: User) => createFriendRequest.mutate({
-    userId: userDetails.id,
-    name: userDetails.name as string,
-    email: userDetails.email as string,
-    profilePicture: userDetails.image as string,
-  })
-
-  const acceptFriendRequest = (id: string) => accFriendRequest.mutate({ id })
-  const declineFriendRequest = (id: string) => decFriendRequest.mutate({ id })
+  const refetchData = () => {
+    void refetchFriends()
+    void refetchUsers()
+  }
 
   if (loadingFriends) return <div>Fetching Friends...</div>;
   if (loadingUsers) return <div>Fetching Users...</div>;
@@ -69,19 +61,18 @@ const Users = ({ userId }: { userId: string | undefined }) => {
       <Friends
         userId={userId}
         friendships={friendships}
-        removeFriend={declineFriendRequest}
+        refetchData={refetchData}
       />
 
       <PendingFriendRequests
         userId={userId}
         friendships={friendships}
-        acceptFriendRequest={acceptFriendRequest}
-        declineFriendRequest={declineFriendRequest}
+        refetchData={refetchData}
       />
 
       <Contacts
         users={usersNotFriends}
-        addFriend={addFriend}
+        refetchData={refetchData}
       />
     </div>
   );
