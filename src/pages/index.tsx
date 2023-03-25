@@ -39,8 +39,8 @@ const Users = ({ userId }: { userId: string | undefined }) => {
   const { data: friendships, isLoading: loadingFriends, refetch: refetchFriends } = api.users.getFriends.useQuery();
 
   const refetchData = () => {
-    refetchFriends()
-    refetchUsers()
+    void refetchFriends()
+    void refetchUsers()
   }
 
   if (loadingFriends) return <div>Fetching Friends...</div>;

@@ -7,8 +7,6 @@ import { api } from "../utils/api";
 import { Input } from "./LoginForm";
 
 type RefetchData = () => void
-type AcceptFriendRequest = (id: string) => void
-type DeclineFriendRequest = (id: string) => void
 
 type FriendsProps = {
   userId: string;
@@ -70,12 +68,12 @@ const PendingFriendRequests = ({ userId, friendships, refetchData }: PendingProp
             : <>
               <button
                 disabled={isLoading}
-                onClick={() => acceptFriendRequest(friendship.id)}
+                onClick={() => void acceptFriendRequest(friendship.id)}
                 className="py-2 px-4 text-lg bg-teal-500 text-white rounded-3xl font-medium"
               >Accept</button>
               <button
                 disabled={isLoading}
-                onClick={() => declineFriendRequest(friendship.id)}
+                onClick={() => void declineFriendRequest(friendship.id)}
                 className="py-2 px-4 text-lg bg-slate-300 text-white rounded-3xl font-medium"
               >Decline</button>
             </>}
@@ -133,7 +131,7 @@ const Friends = ({ userId, friendships, refetchData }: FriendsProps) => {
 
         <button
           disabled={isLoading}
-          onClick={() => removeFriend(friendship.id)}
+          onClick={() => void removeFriend(friendship.id)}
           className="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
         >Remove</button>
       </div>
@@ -197,10 +195,9 @@ const Contacts = ({ users, refetchData }: ContactProps) => {
           <p className="hover:text-blue-dark">{user.email}</p>
         </div>
 
-
         <button
           disabled={isLoading}
-          onClick={() => addFriend(user)}
+          onClick={() => void addFriend(user)}
           className="py-2 px-4 text-lg bg-teal-500 text-white rounded-3xl font-medium"
         >Add Friend</button>
       </div>
