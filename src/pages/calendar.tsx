@@ -1,18 +1,13 @@
-import FullCalendar from '@fullcalendar/react'
-import dayGridPlugin from '@fullcalendar/daygrid'
-import timeGridPlugin from '@fullcalendar/timegrid'
-import interactionPlugin from '@fullcalendar/interaction'
-import listPlugin from '@fullcalendar/list'
-// import { useRouter } from 'next/router'
+import { useState, useEffect, type SetStateAction, type MouseEvent } from 'react'
+import { useRouter } from 'next/router'
+import { useSession } from 'next-auth/react'
 import type { NextPage } from "next";
-import { type EventClickArg, formatDate } from 'fullcalendar'
 
-import { Copyright, Modal, } from '../components'
+import { Copyright, Input, Modal, } from '../components'
+import { default as CalendarComp } from '../components/Calendar'
 import { api } from "../utils/api";
-// import { useSession } from 'next-auth/react'
-import { useState } from 'react'
 
-type Selected = {
+export type Selected = {
   view: {
     calendar: {
       unselect: () => void;
@@ -27,7 +22,8 @@ type Selected = {
   };
   startStr: string;
   endStr: string;
-  allDay: boolean
+  allDay: boolean;
+  id: string;
 }
 
 // type SelectedDate = {
@@ -37,69 +33,60 @@ type Selected = {
 // }
 
 const Calendar: NextPage = () => {
-  // const router = useRouter();
-  // const { data: session } = useSession();
+  const router = useRouter();
+  const { status, data: session } = useSession();
 
-  // if (!session) {
-  //   router.push('/login')
-  // }
+  useEffect(() => {
+    if (!session && status !== 'loading') {
+      void router.push('/login')
+    }
+    // if session.expired > date.now() sign the user out
+  });
 
-  const [showModal, toggleModal] = useState(false)
+  const [showModal, toggleModal] = useState<boolean>(true)
+  const [userSelected, updateSelected] = useState<Selected | null>()
+  const [title, updateTitle] = useState<string>('')
   // const [selectedDate, setSelectedDate] = useState()
 
-  const { data: events } = api.events.getEventsByUserId.useQuery()
-  const createEvent = api.events.createEvent.useMutation()
-  const deleteEvent = api.events.deleteEvent.useMutation()
+  const { data: events, refetch: refetchEvents } = api.events.getEventsByUserId.useQuery()
+  // const { data: friends, refetch: refetchUsers } = api.users.getFriends.useQuery()
+  const { mutateAsync: createEvent } = api.events.createEvent.useMutation()
+  const { mutateAsync: deleteEvent } = api.events.deleteEvent.useMutation()
 
-  // const handleSubmit = () => {
-  //   if (title) {
-  //     const id = `${selected.startStr}-${title}`
-  //     const start = selected.startStr
-  //     const end = selected.endStr
-  //     const allDay = selected.allDay
+  const createNewEvent = async (id: string, start: string, end: string, allDay: boolean) => {
+    console.log({ id, title, start, end, allDay })
+    await createEvent({ id, title, start: new Date(start), end: new Date(end), allDay })
+    void refetchEvents()
+  }
 
-  //     calendarApi.addEvent({ id, title, start, end, allDay })
-  //     createEvent.mutate({ id, title, start: new Date(start), end: new Date(end), allDay })
-  //   }
-  // }
+  const handleSubmit = () => {
+    if (title && userSelected) {
+      const id = `${userSelected.startStr}-${title}`
+      const start = userSelected.startStr
+      const end = userSelected.endStr
+      const allDay = userSelected.allDay
 
-  const handDateClick = (selected: Selected) => {
+      void createNewEvent(id, start, end, allDay)
+    }
+  }
+
+  const changeModal = (event: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => {
+    // console.log({ target: event.target.dateTime })
+    // updateSelected(event.target.id)
     toggleModal(!showModal)
-    const title = prompt('Please enter a new title for your event') as string
-    const calendarApi = selected.view.calendar;
-    calendarApi.unselect();
+  }
 
-
-    if (title) {
-      const id = `${selected.startStr}-${title}`
-      const start = selected.startStr
-      const end = selected.endStr
-      const allDay = selected.allDay
-
-      calendarApi.addEvent({ id, title, start, end, allDay })
-      createEvent.mutate({ id, title, start: new Date(start), end: new Date(end), allDay })
+  const removeEvent = async (id: string) => {
+    if (userSelected) {
+      await deleteEvent({ id })
+      void refetchEvents()
     }
   }
 
-  const handleEventClick = (selected: EventClickArg) => {
-    if (
-      window.confirm(`Are you sur eyou want to delete the event ${selected.event.title}`)
-    ) {
-      // TODO: refresh the Calendar with the latest data
-      deleteEvent.mutate({ id: selected.event.id })
-    }
+  const handleEventClick = (id: string) => {
+    console.log('delete', id)
+    void removeEvent(id)
   }
-
-  const Events = events?.map(event => (
-    <div key={event.id} className="m-1 p-1 rounded-sm bg-white">
-      <h1 >{event.title}</h1>
-      <p>{`${formatDate(event.start, {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-      })}`}</p>
-    </div>
-  ))
 
   return (
     <div className="m-20 mt-0">
@@ -107,42 +94,33 @@ const Calendar: NextPage = () => {
       <h2 className='text-4xl'>Full Calendar Interactive Page</h2>
 
       <div className="mt-4 flex justify-between">
-        {/* Sidebar */}
-
-        <div className="grow shrink basis-1/5 bg-teal-300 p-4 rounded">
-          <h1 className='text-xt'>Events</h1>
-          {Events}
-        </div>
-
         <div className="grow shrink basis-full bg-teal-300 p-8 rounded ml-2">
-          <FullCalendar
-            height="75vh"
-            plugins={[
-              dayGridPlugin,
-              timeGridPlugin,
-              interactionPlugin,
-              listPlugin,
-            ]}
-            headerToolbar={{
-              left: 'prev,next today',
-              center: 'title',
-              right: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth'
-            }}
-            initialView="dayGridMonth"
-            editable={true}
-            selectable={true}
-            selectMirror={true}
-            dayMaxEvents={true}
-            select={handDateClick}
-            eventClick={handleEventClick}
-            // eventsSet={(events) => setCurrentEvents(events)}
-            events={events}
-          />
+          <CalendarComp events={events} onEventClick={handleEventClick} toggleModal={changeModal} />
         </div>
       </div>
 
+      <Modal isVisible={showModal} toggleModal={() => toggleModal(!showModal)} onSubmit={handleSubmit} buttonType={'Save'}>
+        <Input
+          key={'title'}
+          labelFor={'title'}
+          id={'title'}
+          name={'title'}
+          value={title}
+          labelText='Title'
+          placeholder="Add Title"
+          handleChange={(e: { currentTarget: { value: SetStateAction<string> } }) => updateTitle(e.currentTarget.value)}
+          type='text'
+          isRequired={true}
+        />
 
-      <Modal isVisible={showModal} onClose={() => toggleModal(!showModal)} />
+        <div className="flex -space-x-1 overflow-hidden">
+          <img className="inline-block h-6 w-6 rounded-full ring-2 ring-white" src="https://images.unsplash.com/photo-1491528323818-fdd1faba62cc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="" />
+          <img className="inline-block h-6 w-6 rounded-full ring-2 ring-white" src="https://images.unsplash.com/photo-1550525811-e5869dd03032?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="" />
+          <img className="inline-block h-6 w-6 rounded-full ring-2 ring-white" src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2.25&w=256&h=256&q=80" alt="" />
+          <img className="inline-block h-6 w-6 rounded-full ring-2 ring-white" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="" />
+        </div>
+
+      </Modal>
       <Copyright />
     </div>
   );

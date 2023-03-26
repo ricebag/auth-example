@@ -19,6 +19,8 @@ import { prisma } from "./db";
  **/
 declare module "next-auth" {
   interface Session extends DefaultSession {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    accessToken: any
     user: {
       id: string;
       // ...other properties
@@ -40,10 +42,11 @@ declare module "next-auth" {
  **/
 export const authOptions: NextAuthOptions = {
   callbacks: {
-    session({ session, user }) {
+    session({ session, user, }) {
       if (session.user) {
         session.user.id = user.id;
-        // session.user.role = user.role; <-- put other properties on the session here
+        // session.user.role = user.role; // <-- put other properties on the session here
+        // session.accessToken = token.accessToken
       }
       return session;
     },
