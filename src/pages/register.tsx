@@ -2,9 +2,9 @@ import React, { useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 
-import { Copyright, LoginForm, } from '../components'
+import { Copyright, SignUp, } from "../components";
 
-const LoginPage: React.FC = () => {
+const RegisterPage: React.FC = () => {
   const router = useRouter();
   const { status } = useSession();
 
@@ -16,12 +16,12 @@ const LoginPage: React.FC = () => {
   });
 
   return (
-    <div className="bg-slate-100">
-      <LoginForm />
+    <div className="bg-slate-100 flex flex-col items-center gap-2">
+      <SignUp />
 
       <Copyright />
     </div>
-  );
+  )
 }
 
-export default LoginPage;
+export default RegisterPage

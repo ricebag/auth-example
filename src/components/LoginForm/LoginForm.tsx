@@ -1,68 +1,60 @@
-import React, { useState } from "react";
-import type { FormEvent, SyntheticEvent } from "react";
+import Image from "next/image";
+import { BasicAuth, DiscordLogin, GoogleLogin } from "..";
 
-import { loginFields } from "../../constants/FormFields";
-import { DiscordLogin, GoogleLogin, Input, FormAction, FormExtra, LoginFormHeader } from "..";
+export default function LoginForm() {
+    // const basicAuthSignIn = () => {
+    //     console.log('sign in')
+    // }
 
-const fields = loginFields;
-const fieldsState: { [key: string]: string | boolean } = {};
-fields.forEach((field) => fieldsState[field.id] = '');
+    return (
+        <>
+            <div className="flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8">
+                <div className="sm:mx-auto sm:w-full sm:max-w-md">
+                    {/* add logo here */}
+                    <img
+                        className="mx-auto h-12 w-auto"
+                        src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
+                        alt="Your Company"
+                    />
+                    <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">Sign in to your account</h2>
+                </div>
 
-const LoginPage = () => {
-  const [loginState, setLoginState] = useState(fieldsState);
+                <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+                    <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+                        <BasicAuth />
 
-  const handleChange = (e: FormEvent<HTMLInputElement>): void =>
-    setLoginState({ ...loginState, [e.currentTarget.id]: e.currentTarget.value })
+                        <div className="mt-6">
+                            <div className="relative">
+                                <div className="absolute inset-0 flex items-center">
+                                    <div className="w-full border-t border-gray-300" />
+                                </div>
+                                <div className="relative flex justify-center text-sm">
+                                    <span className="bg-white px-2 text-gray-500">Or continue with</span>
+                                </div>
+                            </div>
 
-  const handleSubmit = (e: SyntheticEvent) => {
-    e.preventDefault();
-    authenticateUser();
-  }
+                            <div className="mt-6 grid grid-cols-3 gap-3">
+                                <button
+                                    disabled={true}
+                                    className="inline-flex w-full justify-center rounded-md bg-white py-2 px-4 text-gray-500 shadow-sm ring-1 ring-inset ring-gray-300"
+                                >
+                                    <span className="sr-only">Sign in with Discord</span>
+                                    <Image
+                                        className="h-5 w-5 rounded-full"
+                                        alt=""
+                                        width='50'
+                                        height='50'
+                                        src={'/facebook_logo.svg'}
+                                    />
+                                </button>
 
-  // TODO: Handle Login API Integration here
-  const authenticateUser = () => {
-    console.log('log user in')
-    // await Router.push('/')
-  }
-
-  return (
-    <div className="flex flex-col items-center gap-2">
-      <LoginFormHeader
-        heading="Login to your account"
-        paragraph="Don't have an account yet? "
-        linkName="Signup"
-        linkUrl="/signup"
-      />
-
-      <form className="space-y-6">
-        <div className="-space-y-px">
-          {
-            fields.map(field =>
-              <Input
-                key={field.id}
-                handleChange={handleChange}
-                value={loginState[field.id] as string}
-                labelText={field.labelText}
-                labelFor={field.labelFor}
-                id={field.id}
-                name={field.name}
-                type={field.type}
-                isRequired={field.isRequired}
-                placeholder={field.placeholder}
-              />
-            )
-          }
-        </div>
-
-        <FormExtra />
-        <FormAction handleSubmit={handleSubmit} text="Login" />
-
-      </form>
-
-      <DiscordLogin />
-      <GoogleLogin />
-    </div>
-  );
-};
-
-export default LoginPage;
+                                <DiscordLogin />
+                                <GoogleLogin />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </>
+    )
+}
