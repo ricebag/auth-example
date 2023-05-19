@@ -1,23 +1,35 @@
-import { Fragment } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
 
 import Link from "next/link"
 import { signOut, useSession } from "next-auth/react";
 import Image from 'next/image';
+import { useRouter } from 'next/router';
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ')
 }
 
+type Tabs = 'Dashboard' | 'Friends' | 'Events' | ''
+
 const Nav = () => {
   const navigation = [
-    { name: 'Dashboard', href: '/', current: true },
-    { name: 'Friends', href: '/connections', current: false },
-    { name: 'Calendar', href: '/calendar', current: false },
+    { name: 'Dashboard', href: '/', current: false },
+    { name: 'Friends', href: '/connections', current: true },
+    { name: 'Events', href: '/events', current: false },
   ]
 
+  const [selectedTab, updateSelectedTab] = useState<Tabs>('')
+  const { asPath } = useRouter()
   const { data: session } = useSession();
+
+  useEffect(() => {
+    if (asPath !== selectedTab) {
+      const tab = asPath.split('/')[1] as Tabs
+      updateSelectedTab(tab)
+    }
+  }, [asPath, selectedTab]);
 
   return (
     <Disclosure as="nav" className="bg-gray-800">
@@ -56,7 +68,7 @@ const Nav = () => {
                         key={item.name}
                         href={item.href}
                         className={classNames(
-                          item.current ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
+                          item.href.split('/')[1] === selectedTab ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
                           'rounded-md px-3 py-2 text-sm font-medium'
                         )}
                         aria-current={item.current ? 'page' : undefined}

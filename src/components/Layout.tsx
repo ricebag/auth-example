@@ -10,7 +10,7 @@ const Layout: FC<Props> = ({ children }: Props) => {
   return (
     <div>
       <Nav />
-      <main>{children}</main>
+      <main className='height-full'>{children}</main>
     </div>
   )
 }
