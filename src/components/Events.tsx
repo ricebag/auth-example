@@ -1,10 +1,17 @@
-import { type Event } from "@prisma/client"
+import { Prisma } from "@prisma/client"
 import GroupIcons from "./GroupIcons"
 
-export default function Events({ events }: { events?: Event[] }) {
+const eventsWithPeople = Prisma.validator<Prisma.EventArgs>()({
+    include: {
+        peopleEvents: { include: { user: true } }
+    },
+})
+type Events = Prisma.EventGetPayload<typeof eventsWithPeople>
+
+export default function Events({ events }: { events?: Events[] }) {
     const formattedEvents = events?.map((event) => ({
         ...event,
-        guests: event?.peopleEvents?.map((eventPerson) => eventPerson.user)
+        guests: event?.peopleEvents?.map((eventPerson) => eventPerson.user),
     }))
 
     return (
