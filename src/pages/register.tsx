@@ -9,7 +9,6 @@ const RegisterPage: React.FC = () => {
   const { status } = useSession();
 
   useEffect(() => {
-    console.log({ status })
     if (status === 'authenticated') {
       void router.push('/')
     }
