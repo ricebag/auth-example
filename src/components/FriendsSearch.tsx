@@ -4,6 +4,7 @@ import Image from "next/image"
 
 import { Combobox, Transition } from '@headlessui/react'
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid'
+import GroupIcons from "./GroupIcons"
 
 
 const FriendSearch = ({ friends, selectedGuests, setSelectedGuests }: { friends: User[] | undefined, selectedGuests: User[] | [], setSelectedGuests: (value: SetStateAction<User[]>) => void }) => {
@@ -31,6 +32,8 @@ const FriendSearch = ({ friends, selectedGuests, setSelectedGuests }: { friends:
                         />
                     </Combobox.Button>
                 </div>
+
+                <GroupIcons users={selectedGuests} />
 
                 <Transition
                     as={Fragment}

@@ -29,6 +29,24 @@ export const eventRouter = createTRPCRouter({
       console.log("error", error);
     }
   }),
+  getEventsById: protectedProcedure.input(z.string()).query(async ({ ctx, input }) => {
+    try {
+      return await ctx.prisma.event.findFirst({
+        where: {
+          id: input,
+        },
+        include: {
+          peopleEvents: {
+            include: {
+              user: {}
+            }
+          }
+        }
+      });
+    } catch (error) {
+      console.log("error", error);
+    }
+  }),
 
   createEvent: protectedProcedure
     .input(z.object({
