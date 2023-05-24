@@ -8,7 +8,7 @@ const eventsWithPeople = Prisma.validator<Prisma.EventArgs>()({
 })
 type Events = Prisma.EventGetPayload<typeof eventsWithPeople>
 
-export default function Events({ events }: { events?: Events[] }) {
+export default function Events({ events, editEvent }: { events?: Events[], editEvent: (id: string) => void }) {
     const formattedEvents = events?.map((event) => ({
         ...event,
         guests: event?.peopleEvents?.map((eventPerson) => eventPerson.user),
@@ -35,39 +35,19 @@ export default function Events({ events }: { events?: Events[] }) {
                                         <a
                                             href="#"
                                             className="inline-flex items-center rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                                            onClick={() => editEvent(event.id)}
                                         >
-                                            View
+                                            Edit
                                         </a>
                                     </div>
                                 </div>
                             </li>
                         )
                     })}
-
-
-                    {/* {people.map((person) => (
-                        <li key={person.handle} className="py-4">
-                            <div className="flex items-center space-x-4">
-                                <div className="flex-shrink-0">
-                                    <img className="h-8 w-8 rounded-full" src={person.imageUrl} alt="" />
-                                </div>
-                                <div className="min-w-0 flex-1">
-                                    <p className="truncate text-sm font-medium text-gray-900">{person.name}</p>
-                                    <p className="truncate text-sm text-gray-500">{'@' + person.handle}</p>
-                                </div>
-                                <div>
-                                    <a
-                                        href="#"
-                                        className="inline-flex items-center rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-                                    >
-                                        View
-                                    </a>
-                                </div>
-                            </div>
-                        </li>
-                    ))} */}
                 </ul>
             </div>
+     
+            {/* view more functionality?
             <div className="mt-6">
                 <a
                     href="#"
@@ -75,7 +55,7 @@ export default function Events({ events }: { events?: Events[] }) {
                 >
                     View all
                 </a>
-            </div>
+            </div> */}
         </div>
     )
 }
