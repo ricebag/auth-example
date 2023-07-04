@@ -4,45 +4,42 @@ import { type User } from '@prisma/client';
 
 import { FriendsSearch, Input, Modal, } from '../components'
 import { api } from "../utils/api";
-import { Datepicker } from '../components';
 
 const GroupModal = ({
     display,
     toggleModal,
-    refetchEvents,
+    refetchGroups,
 }: {
     display: boolean,
     toggleModal: (display: boolean) => void,
-    refetchEvents: () => Promise<unknown>,
+    refetchGroups: () => Promise<unknown>,
 }) => {
     const { data: session } = useSession();
 
     const [title, setTitle] = useState<string>('')
-    const [date, setDate] = useState<Date>()
     const [selectedGuests, setSelectedGuests] = useState<User[]>([])
     const [description, setDescription] = useState<string>('')
 
     const { mutateAsync: createGroup } = api.groups.createGroup.useMutation()
     const { data: allUsers } = api.users.getAll.useQuery()
 
-    const createNewEvent = async (id: string, allDay: boolean, guests?: User[]) => {
+    const createNewGroup = async (id: string, allDay: boolean, guests?: User[]) => {
         const formattedGuests = guests?.filter((user) => user.id !== session?.user.id) as User[]
 
         await createGroup({ id, title, guests: formattedGuests })
-        void refetchEvents()
+        void refetchGroups()
         setTitle('')
     }
 
     const handleSubmit = () => {
-        void createNewEvent(`${title}-id`, false, selectedGuests)
-        void refetchEvents()
+        void createNewGroup(`${title}-id`, false, selectedGuests)
+        void refetchGroups()
         toggleModal(!display)
     }
 
     const closeModal = () => {
         toggleModal(!display)
         setTitle('')
-        setDate(undefined)
         setDescription('')
         setSelectedGuests([])
     }
@@ -68,8 +65,6 @@ const GroupModal = ({
             />
 
             <FriendsSearch friends={allUsers} selectedGuests={selectedGuests} setSelectedGuests={setSelectedGuests} />
-
-            <Datepicker date={date} setDate={setDate} />
 
             <Input
                 key={'description'}

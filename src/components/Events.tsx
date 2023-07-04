@@ -1,6 +1,9 @@
+import type { Dispatch, SetStateAction } from "react"
+
+import { useState, } from "react"
 import { Prisma } from "@prisma/client"
 import { api } from "../utils/api"
-import { Loader } from "./"
+import { EventModal, Loader } from "./"
 
 const eventsWithPeople = Prisma.validator<Prisma.EventArgs>()({
     include: {
@@ -9,8 +12,16 @@ const eventsWithPeople = Prisma.validator<Prisma.EventArgs>()({
 })
 type Events = Prisma.EventGetPayload<typeof eventsWithPeople>
 
-export default function Events({ groupId, editEvent }: { groupId: string, editEvent: (id: string) => void }) {
-    const { data: events, isLoading } = api.events.getEventsByGroupId.useQuery(groupId)
+type EventsComponentTypes = {
+    groupId: string,
+    showModal: boolean,
+    toggleModal: Dispatch<SetStateAction<boolean>>
+}
+
+export default function Events({ groupId, showModal, toggleModal }: EventsComponentTypes) {
+    const [selectedId, setSelectedId] = useState<string>("")
+
+    const { data: events, refetch: refetchEvents, isLoading } = api.events.getEventsByGroupId.useQuery(groupId)
 
     return (
         <div>
@@ -28,7 +39,7 @@ export default function Events({ groupId, editEvent }: { groupId: string, editEv
                                     <a
                                         href="#"
                                         className="inline-flex items-center rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-                                        onClick={() => editEvent(event.id)}
+                                        onClick={() => setSelectedId(event.id)}
                                     >
                                         Edit
                                     </a>
@@ -39,6 +50,15 @@ export default function Events({ groupId, editEvent }: { groupId: string, editEv
                     )}
                 </ul>
             </div>
+            <EventModal
+                selectedId={selectedId}
+                setSelectedId={setSelectedId}
+                display={showModal}
+                toggleModal={toggleModal}
+                refetchEvents={refetchEvents}
+                groupId={groupId}
+            />
+
             <Loader show={isLoading} />
         </div>
     )
