@@ -1,16 +1,8 @@
 import type { Dispatch, SetStateAction } from "react"
 
 import { useState, } from "react"
-import { Prisma } from "@prisma/client"
 import { api } from "../utils/api"
 import { EventModal, Loader } from "./"
-
-const eventsWithPeople = Prisma.validator<Prisma.EventArgs>()({
-    include: {
-        peopleEvents: { include: { user: true } }
-    },
-})
-type Events = Prisma.EventGetPayload<typeof eventsWithPeople>
 
 type EventsComponentTypes = {
     groupId: string,
