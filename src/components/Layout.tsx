@@ -1,6 +1,7 @@
 import type { ReactNode, FC } from 'react'
 
 import { default as Nav } from './Nav'
+import Copyright from './Copyright'
 
 type Props = {
   children: ReactNode
@@ -8,9 +9,10 @@ type Props = {
 
 const Layout: FC<Props> = ({ children }: Props) => {
   return (
-    <div>
+    <div className='flex flex-col min-h-screen'>
       <Nav />
-      <main className='height-full'>{children}</main>
+      <main className='grow'>{children}</main>
+      <Copyright />
     </div>
   )
 }
