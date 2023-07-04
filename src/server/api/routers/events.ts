@@ -81,19 +81,15 @@ export const eventRouter = createTRPCRouter({
       title: z.string(),
       start: z.date(),
       end: z.date(),
+      groupId: z.string(),
       allDay: z.boolean(),
-      guests: z.array(z.object({ id: z.string() })),
     }))
     .mutation(async ({ ctx, input }) => {
       try {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        const { id, title, start, end, allDay, guests } = input
+        const { id, title, start, end, allDay, groupId } = input
 
-        if (!id || !title || !start || !end) throw new Error('Please provide all of the required data to create an event')
-        const eventGuests = [
-          { user: { connect: { id: ctx.session.user.id } } },
-          ...guests?.map((user: { id: string; }) => ({ user: { connect: { id: user.id } } }))
-        ]
+        if (!id || !title || !start || !end || !groupId) throw new Error('Please provide all of the required data to create an event')
 
         await ctx.prisma.event.create({
           data: {
@@ -102,20 +98,9 @@ export const eventRouter = createTRPCRouter({
             start,
             end,
             allDay,
-            groupId: '1',
-
-            peopleEvents: {
-              create: eventGuests
-            }
+            groupId,
           },
         });
-
-        // await ctx.prisma.peopleEvents.create({
-        //   data: {
-        //     userId: ctx.session.user.id,
-        //     eventId: id,
-        //   }
-        // })
       } catch (error) {
         console.log(error);
       }
