@@ -2,7 +2,7 @@ import { type User } from "@prisma/client"
 import Image from "next/image"
 
 const GroupIcons = ({ users }: { users: User[] }) => (
-    <div className="flex -space-x-1 overflow-hidden">
+    <div className="flex -space-x-1 overflow-hidden pt-1">
         {users?.map((user, key) => {
             if (key > 4) return (<></>)
 

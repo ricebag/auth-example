@@ -1,70 +1,47 @@
-import { useState, type SetStateAction, type Dispatch } from 'react'
+import { useState, type SetStateAction } from 'react'
+import { useSession } from 'next-auth/react';
+import { type User } from '@prisma/client';
 
-import { Input, Modal, } from '../components'
+import { FriendsSearch, Input, Modal, } from '../components'
 import { api } from "../utils/api";
-import { Datepicker } from '../components';
 
-const EventModal = ({
+const GroupModal = ({
     display,
-    groupId,
-    selectedId,
-    refetchEvents,
-    setSelectedId,
     toggleModal,
+    refetchGroups,
 }: {
     display: boolean,
-    groupId: string
-    selectedId: string,
-    refetchEvents: () => Promise<unknown>,
-    setSelectedId: Dispatch<SetStateAction<string>>
     toggleModal: (display: boolean) => void,
+    refetchGroups: () => Promise<unknown>,
 }) => {
+    const { data: session } = useSession();
+
     const [title, setTitle] = useState<string>('')
-    const [date, setDate] = useState<Date>()
+    const [selectedGuests, setSelectedGuests] = useState<User[]>([])
     const [description, setDescription] = useState<string>('')
 
-    const { mutateAsync: createEvent, } = api.events.createEvent.useMutation()
-    const { mutateAsync: deleteEvent, } = api.events.deleteEvent.useMutation()
+    const { mutateAsync: createGroup } = api.groups.createGroup.useMutation()
+    const { data: allUsers } = api.users.getAll.useQuery()
 
-    api.events.getEventsById.useQuery(selectedId, {
-        enabled: !!selectedId,
-        onSettled: ((data) => {
-            console.log(data)
-            setTitle(data?.title ?? '')
-            setDate(data?.start ?? undefined)
-            setDescription(data?.title ?? '')
-            toggleModal(!display)
-        })
-    })
+    const createNewGroup = async (id: string, allDay: boolean, guests?: User[]) => {
+        const formattedGuests = guests?.filter((user) => user.id !== session?.user.id) as User[]
 
-    const createNewEvent = async (id: string, allDay: boolean) => {
-        await createEvent({ id, title, start: new Date(date || ''), end: new Date(date || ''), allDay, groupId })
-        void refetchEvents()
+        await createGroup({ id, title, guests: formattedGuests })
+        void refetchGroups()
         setTitle('')
     }
 
     const handleSubmit = () => {
-        void createNewEvent(`${title}-id`, false)
-        void refetchEvents()
+        void createNewGroup(`${title}-id`, false, selectedGuests)
+        void refetchGroups()
         toggleModal(!display)
     }
 
     const closeModal = () => {
         toggleModal(!display)
         setTitle('')
-        setDate(undefined)
         setDescription('')
-        setSelectedId('')
-    }
-
-    const onDelete = async () => {
-        // set loading as true
-
-        toggleModal(!display)
-        await deleteEvent({ id: selectedId })
-        await refetchEvents()
-
-        // set loading as false
+        setSelectedGuests([])
     }
 
     return (
@@ -73,7 +50,6 @@ const EventModal = ({
             toggleModal={closeModal}
             onSubmit={handleSubmit}
             buttonType={'Save'}
-            onDelete={selectedId ? onDelete : undefined}
         >
             <Input
                 key={'title'}
@@ -88,7 +64,7 @@ const EventModal = ({
                 isRequired={true}
             />
 
-            <Datepicker date={date} setDate={setDate} />
+            <FriendsSearch friends={allUsers} selectedGuests={selectedGuests} setSelectedGuests={setSelectedGuests} />
 
             <Input
                 key={'description'}
@@ -106,4 +82,4 @@ const EventModal = ({
     );
 }
 
-export default EventModal;
+export default GroupModal;

@@ -1,11 +1,12 @@
+import type { Group } from '@prisma/client';
+import type { NextPage } from "next";
+
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import { useSession } from 'next-auth/react'
-import type { NextPage } from "next";
 
-import { Button, Copyright, Events } from '../components'
+import { Button, Events, VerticleDivider, GroupModal, Groups, Loader } from '../components'
 import { api } from "../utils/api";
-import EventModal from '../components/EventModal';
 
 export type Selected = {
   view: {
@@ -26,7 +27,7 @@ export type Selected = {
   id: string;
 }
 
-const Calendar: NextPage = () => {
+const EventsPage: NextPage = () => {
   const router = useRouter();
   const { status, data: session } = useSession();
 
@@ -37,36 +38,54 @@ const Calendar: NextPage = () => {
     // if session.expired > date.now() sign the user out
   });
 
-  const [showModal, toggleModal] = useState<boolean>(false)
-  const [selectedId, setSelectedId] = useState("")
+  const [showEventModal, toggleEventModal] = useState<boolean>(false)
+  const [showGroupModal, toggleGroupModal] = useState<boolean>(false)
 
-  const { data: events, refetch: refetchEvents } = api.events.getEventsByUserId.useQuery()
+  const [selectedGroup, setSelectedGroup] = useState<Group | undefined>()
 
-  const editEvent = (id: string) => {
-    setSelectedId(id)
+  const { data: groups, refetch: refetchGroups, isLoading } = api.groups.getGroupsByUserId.useQuery()
+
+
+  const onGroupClick = (nextGroup: Group) => {
+    if (selectedGroup?.id === nextGroup.id) setSelectedGroup(undefined)
+    else setSelectedGroup(nextGroup)
   }
 
   return (
-    <div >
-      <div className="m-20 mt-0">
-        <div className='flex justify-between'>
-          <h1 className='text-6xl'>Events</h1>
-          <Button className='self-center bg-indigo-400' variant={'default'} onClick={() => toggleModal(!showModal)}>New Event</Button>
+    <div className='grow'>
+      <div className='flex grow'>
+        <div className='grow px-3'>
+          <div className='flex justify-between m-5'>
+            <h1 className='text-5xl'>Groups</h1>
+            <Button className='self-center bg-indigo-400' variant={'default'} onClick={() => toggleGroupModal(!showGroupModal)}>New Group</Button>
+          </div>
+          <Groups groups={groups} onGroupClick={onGroupClick} />
         </div>
 
-        <Events events={events} editEvent={editEvent} />
+        {selectedGroup && (
+          <div className='flex grow-[3]'>
+            <VerticleDivider />
+            <div className='grow px-3'>
+              <div className='flex justify-between m-5'>
+                <h1 className='text-5xl'>{selectedGroup.title}</h1>
+                <Button className='self-center bg-indigo-400' variant={'default'} onClick={() => toggleEventModal(!showEventModal)}>New Event</Button>
+              </div>
 
-        <EventModal
-          selectedId={selectedId}
-          setSelectedId={setSelectedId}
-          display={showModal}
-          toggleModal={toggleModal}
-          refetchEvents={refetchEvents} />
+              <Events groupId={selectedGroup.id} showModal={showEventModal} toggleModal={toggleEventModal} />
 
+              <GroupModal
+                display={showGroupModal}
+                toggleModal={toggleGroupModal}
+                refetchGroups={refetchGroups}
+              />
+            </div>
+          </div>
+        )}
       </div>
-      <Copyright />
+
+      <Loader show={isLoading} />
     </div>
   );
 }
 
-export default Calendar;
+export default EventsPage;
