@@ -70,7 +70,6 @@ model User {
     sessions                   Session[]
     friendshipRequestsSent     Friendship[]   @relation("FriendRequestsSent")
     friendshipRequestsReceived Friendship[]   @relation("FriendRequestsReceived")
-    peopleEvents               PeopleEvents[]
     peopleGroups               PeopleGroups[]
 
     @@unique([id, name, email, image])
@@ -122,23 +121,12 @@ model Event {
     end          DateTime
     createdAt    DateTime       @default(now())
     updatedAt    DateTime       @updatedAt
-    peopleEvents PeopleEvents[] @relation("events")
     Group        Group          @relation(fields: [groupId], references: [id])
     groupId      String
 
     address     String?
     postcode    String?
     countryCode String?
-}
-
-model PeopleEvents {
-    id      String @id @default(cuid())
-    eventId String
-    events  Event? @relation("events", fields: [eventId], references: [id])
-    userId  String
-    user    User   @relation(fields: [userId], references: [id])
-
-    @@unique([eventId, userId])
 }
 
 enum FriendshipRequestStatus {
