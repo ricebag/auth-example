@@ -2,34 +2,6 @@ import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const eventRouter = createTRPCRouter({
-  getEventsByUserId: protectedProcedure.query(async ({ ctx }) => {
-    try {
-      return await ctx.prisma.event.findMany({
-        where: {
-          peopleEvents: {
-            some: {
-              user: {
-                id: ctx.session.user.id
-              }
-            }
-          }
-        },
-        include: {
-          peopleEvents: {
-            include: {
-              user: {}
-            }
-          }
-        },
-        orderBy: {
-          updatedAt: "desc",
-        },
-      });
-    } catch (error) {
-      console.log("error", error);
-    }
-  }),
-
   getEventsByGroupId: protectedProcedure.input(z.string()).query(async ({ ctx, input }) => {
     try {
       return await ctx.prisma.event.findMany({
@@ -63,9 +35,13 @@ export const eventRouter = createTRPCRouter({
           id: input,
         },
         include: {
-          peopleEvents: {
+          Group: {
             include: {
-              user: {}
+              peopleGroups: {
+                include: {
+                  user: {}
+                }
+              }
             }
           }
         }
@@ -112,13 +88,6 @@ export const eventRouter = createTRPCRouter({
     }))
     .mutation(async ({ ctx, input }) => {
       try {
-        // TODO: clean up the events table in 1 request? is it possible?
-        await ctx.prisma.peopleEvents.deleteMany({
-          where: {
-            eventId: input.id
-          },
-        });
-
         await ctx.prisma.event.delete({
           where: {
             id: input.id
