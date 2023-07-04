@@ -29,6 +29,33 @@ export const eventRouter = createTRPCRouter({
       console.log("error", error);
     }
   }),
+
+  getEventsByGroupId: protectedProcedure.input(z.string()).query(async ({ ctx, input }) => {
+    try {
+      return await ctx.prisma.event.findMany({
+        where: {
+          groupId: input
+        },
+        include: {
+          Group: {
+            include: {
+              peopleGroups: {
+                include: {
+                  user: {}
+                }
+              }
+            }
+          }
+        },
+        orderBy: {
+          updatedAt: "desc",
+        },
+      });
+    } catch (error) {
+      console.log("error", error);
+    }
+  }),
+
   getEventsById: protectedProcedure.input(z.string()).query(async ({ ctx, input }) => {
     try {
       return await ctx.prisma.event.findFirst({
@@ -75,6 +102,7 @@ export const eventRouter = createTRPCRouter({
             start,
             end,
             allDay,
+            groupId: '1',
 
             peopleEvents: {
               create: eventGuests

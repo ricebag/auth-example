@@ -1,4 +1,4 @@
-import { useState, type SetStateAction, type Dispatch } from 'react'
+import { useState, type SetStateAction } from 'react'
 import { useSession } from 'next-auth/react';
 import { type User } from '@prisma/client';
 
@@ -6,15 +6,11 @@ import { FriendsSearch, Input, Modal, } from '../components'
 import { api } from "../utils/api";
 import { Datepicker } from '../components';
 
-const EventModal = ({
-    selectedId,
-    setSelectedId,
+const GroupModal = ({
     display,
     toggleModal,
     refetchEvents,
 }: {
-    selectedId: string,
-    setSelectedId: Dispatch<SetStateAction<string>>
     display: boolean,
     toggleModal: (display: boolean) => void,
     refetchEvents: () => Promise<unknown>,
@@ -26,26 +22,13 @@ const EventModal = ({
     const [selectedGuests, setSelectedGuests] = useState<User[]>([])
     const [description, setDescription] = useState<string>('')
 
-    const { mutateAsync: createEvent } = api.events.createEvent.useMutation()
+    const { mutateAsync: createGroup } = api.groups.createGroup.useMutation()
     const { data: allUsers } = api.users.getAll.useQuery()
-    const { mutateAsync: deleteEvent } = api.events.deleteEvent.useMutation()
-
-    api.events.getEventsById.useQuery(selectedId, {
-        enabled: !!selectedId,
-        onSettled: ((data) => {
-            console.log(data)
-            setTitle(data?.title ?? '')
-            setDate(data?.start ?? undefined)
-            setDescription(data?.title ?? '')
-            setSelectedGuests(data?.peopleEvents?.map(peopleEvent => peopleEvent.user) || [])
-            toggleModal(!display)
-        })
-    })
 
     const createNewEvent = async (id: string, allDay: boolean, guests?: User[]) => {
         const formattedGuests = guests?.filter((user) => user.id !== session?.user.id) as User[]
 
-        await createEvent({ id, title, start: new Date(date || ''), end: new Date(date || ''), allDay, guests: formattedGuests })
+        await createGroup({ id, title, guests: formattedGuests })
         void refetchEvents()
         setTitle('')
     }
@@ -61,18 +44,7 @@ const EventModal = ({
         setTitle('')
         setDate(undefined)
         setDescription('')
-        setSelectedId('')
         setSelectedGuests([])
-    }
-
-    const onDelete = async () => {
-        // set loading as true
-
-        toggleModal(!display)
-        await deleteEvent({ id: selectedId })
-        await refetchEvents()
-
-        // set loading as false
     }
 
     return (
@@ -81,7 +53,6 @@ const EventModal = ({
             toggleModal={closeModal}
             onSubmit={handleSubmit}
             buttonType={'Save'}
-            onDelete={selectedId ? onDelete : undefined}
         >
             <Input
                 key={'title'}
@@ -116,4 +87,4 @@ const EventModal = ({
     );
 }
 
-export default EventModal;
+export default GroupModal;

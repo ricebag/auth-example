@@ -16,6 +16,11 @@ model Example {
     updatedAt DateTime @updatedAt
 }
 
+enum Role {
+    USER
+    ADMIN
+}
+
 // Necessary for Next auth
 model Account {
     id                String  @id @default(cuid())
@@ -66,6 +71,7 @@ model User {
     friendshipRequestsSent     Friendship[]   @relation("FriendRequestsSent")
     friendshipRequestsReceived Friendship[]   @relation("FriendRequestsReceived")
     peopleEvents               PeopleEvents[]
+    peopleGroups               PeopleGroups[]
 
     @@unique([id, name, email, image])
 }
@@ -85,6 +91,29 @@ model Friendship {
     to                  User?                   @relation("FriendRequestsReceived", references: [id, name, email, image], fields: [requestSentToId, user2, user2Email, user2ProfilePicture])
 }
 
+model Group {
+    id          String   @id @default(cuid())
+    title       String
+    description String
+    image       String
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    peopleGroups PeopleGroups[] @relation("group")
+    Event        Event[]
+}
+
+model PeopleGroups {
+    id      String @id @default(cuid())
+    groupId String
+    groups  Group? @relation("group", fields: [groupId], references: [id])
+    userId  String
+    user    User   @relation(fields: [userId], references: [id])
+    role    Role   @default(USER)
+
+    @@unique([groupId, userId])
+}
+
 model Event {
     id           String         @id @default(cuid())
     title        String
@@ -94,6 +123,8 @@ model Event {
     createdAt    DateTime       @default(now())
     updatedAt    DateTime       @updatedAt
     peopleEvents PeopleEvents[] @relation("events")
+    Group        Group          @relation(fields: [groupId], references: [id])
+    groupId      String
 
     address     String?
     postcode    String?
