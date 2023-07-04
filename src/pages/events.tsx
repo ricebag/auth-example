@@ -39,28 +39,20 @@ const EventsPage: NextPage = () => {
 
   const [showEventModal, toggleEventModal] = useState<boolean>(false)
   const [showGroupModal, toggleGroupModal] = useState<boolean>(false)
-  const [showLoader, setLoader] = useState<boolean>(false)
 
   const [selectedId, setSelectedId] = useState<string>("")
   const [selectedGroup, setSelectedGroup] = useState<Group | undefined>()
 
-  // const { data: events, refetch: refetchEvents } = api.events.getEventsByUserId.useQuery()
-  const { data: groups, refetch: refetchGroups } = api.groups.getGroupsByUserId.useQuery()
+  const { data: groups, refetch: refetchGroups, isLoading } = api.groups.getGroupsByUserId.useQuery()
 
   const editEvent = (id: string) => {
     setSelectedId(id)
   }
 
   const onGroupClick = (nextGroup: Group) => {
-    console.log({ selectedGroup, nextGroup })
     if (selectedGroup?.id === nextGroup.id) setSelectedGroup(undefined)
     else setSelectedGroup(nextGroup)
   }
-
-  // const refetchData = () => {
-  //   refetchGroups
-  //   refetchEvents
-  // }
 
   return (
     <div className="m-20 mt-0">
@@ -105,7 +97,7 @@ const EventsPage: NextPage = () => {
         </div>
       </div>
 
-      <Loader show={showLoader} />
+      <Loader show={isLoading} />
 
       <Copyright />
     </div>
