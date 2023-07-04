@@ -1,5 +1,6 @@
 import { Prisma } from "@prisma/client"
 import { api } from "../utils/api"
+import { Loader } from "./"
 
 const eventsWithPeople = Prisma.validator<Prisma.EventArgs>()({
     include: {
@@ -9,7 +10,7 @@ const eventsWithPeople = Prisma.validator<Prisma.EventArgs>()({
 type Events = Prisma.EventGetPayload<typeof eventsWithPeople>
 
 export default function Events({ groupId, editEvent }: { groupId: string, editEvent: (id: string) => void }) {
-    const { data: events } = api.events.getEventsByGroupId.useQuery(groupId)
+    const { data: events, isLoading } = api.events.getEventsByGroupId.useQuery(groupId)
 
     return (
         <div>
@@ -38,16 +39,7 @@ export default function Events({ groupId, editEvent }: { groupId: string, editEv
                     )}
                 </ul>
             </div>
-
-            {/* view more functionality?
-            <div className="mt-6">
-                <a
-                    href="#"
-                    className="flex w-full items-center justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus-visible:outline-offset-0"
-                >
-                    View all
-                </a>
-            </div> */}
+            <Loader show={isLoading} />
         </div>
     )
 }
