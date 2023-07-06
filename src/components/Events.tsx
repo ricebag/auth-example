@@ -40,8 +40,16 @@ export default function Events({ groupId, showModal, toggleModal }: EventsCompon
                         </li>
                     )
                     )}
+
+                    {!events?.length && (
+                        <div className="flex flex-col justify-center grow text-center pt-[10%]">
+                            <p>This group does not have any events yet</p>
+                            <p>To get started select the <strong>New Event</strong> button in the top right</p>
+                        </div>
+                    )}
                 </ul>
             </div>
+
             <EventModal
                 selectedId={selectedId}
                 setSelectedId={setSelectedId}
