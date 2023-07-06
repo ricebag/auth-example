@@ -60,7 +60,7 @@ export const groupRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       try {
         const { title, guests } = input
-        const id: string = uuid.v4() // ⇨ '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d'
+        const id: string = uuid.v4()
 
         if (!title) throw new Error('Please provide all of the required data to create an event')
         const groupGuests = [

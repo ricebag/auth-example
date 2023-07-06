@@ -43,8 +43,8 @@ export default function Events({ groupId, showModal, toggleModal }: EventsCompon
 
                     {!events?.length && (
                         <div className="flex flex-col justify-center grow text-center pt-[10%]">
-                            <p>This is a new group</p>
-                            <p>You dont have any events yet, create some about.</p>
+                            <p>This group does not have any events yet</p>
+                            <p>To get started select the <strong>New Event</strong> button in the top right</p>
                         </div>
                     )}
                 </ul>

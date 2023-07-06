@@ -28,6 +28,13 @@ export default function Groups({ groups, onGroupClick }: { groups?: Groups[], on
                         </div>
                     </li>
                 ))}
+
+                {!formattedGroups?.length && (
+                    <div className="flex flex-col justify-center grow text-center pt-[10%]">
+                        <p>You dont have any groups yet</p>
+                        <p>To get started select the <strong>New Group</strong> button in the top right</p>
+                    </div>
+                )}
             </ul>
         </div>
     )
