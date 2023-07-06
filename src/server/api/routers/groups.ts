@@ -1,4 +1,7 @@
 import { z } from "zod";
+import { Role } from "@prisma/client";
+import * as uuid from 'uuid';
+
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const groupRouter = createTRPCRouter({
@@ -51,19 +54,18 @@ export const groupRouter = createTRPCRouter({
 
   createGroup: protectedProcedure
     .input(z.object({
-      id: z.string(),
       title: z.string(),
       guests: z.array(z.object({ id: z.string() })),
     }))
     .mutation(async ({ ctx, input }) => {
       try {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        const { id, title, guests } = input
+        const { title, guests } = input
+        const id: string = uuid.v4() // ⇨ '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d'
 
-        if (!id || !title) throw new Error('Please provide all of the required data to create an event')
+        if (!title) throw new Error('Please provide all of the required data to create an event')
         const groupGuests = [
-          { user: { connect: { id: ctx.session.user.id, role: 'ADMIN' } } },
-          ...guests?.map((user: { id: string; }) => ({ user: { connect: { id: user.id, role: 'USER' } } }))
+          { user: { connect: { id: ctx.session.user.id } }, role: Role.ADMIN, id: uuid.v4() },
+          ...guests?.map((user: { id: string; }) => ({ user: { connect: { id: user.id } }, role: Role.USER, id: uuid.v4() }))
         ]
 
         await ctx.prisma.group.create({
@@ -71,6 +73,7 @@ export const groupRouter = createTRPCRouter({
             id,
             title,
             description: '',
+            // TODO: make this dynamic
             image: '/avatar.svg',
 
             peopleGroups: {

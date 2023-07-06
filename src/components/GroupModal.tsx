@@ -26,7 +26,7 @@ const GroupModal = ({
     const createNewGroup = async (id: string, allDay: boolean, guests?: User[]) => {
         const formattedGuests = guests?.filter((user) => user.id !== session?.user.id) as User[]
 
-        await createGroup({ id, title, guests: formattedGuests })
+        await createGroup({ title, guests: formattedGuests })
         void refetchGroups()
         setTitle('')
     }

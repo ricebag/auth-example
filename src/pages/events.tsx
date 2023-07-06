@@ -43,7 +43,7 @@ const EventsPage: NextPage = () => {
 
   const [selectedGroup, setSelectedGroup] = useState<Group | undefined>()
 
-  const { data: groups, refetch: refetchGroups, isLoading } = api.groups.getGroupsByUserId.useQuery()
+  const { data: groups, refetch: refetchGroups, isFetching } = api.groups.getGroupsByUserId.useQuery()
 
 
   const onGroupClick = (nextGroup: Group) => {
@@ -73,17 +73,18 @@ const EventsPage: NextPage = () => {
 
               <Events groupId={selectedGroup.id} showModal={showEventModal} toggleModal={toggleEventModal} />
 
-              <GroupModal
-                display={showGroupModal}
-                toggleModal={toggleGroupModal}
-                refetchGroups={refetchGroups}
-              />
             </div>
           </div>
         )}
       </div>
 
-      <Loader show={isLoading} />
+      <GroupModal
+        display={showGroupModal}
+        toggleModal={toggleGroupModal}
+        refetchGroups={refetchGroups}
+      />
+
+      <Loader show={isFetching} />
     </div>
   );
 }
