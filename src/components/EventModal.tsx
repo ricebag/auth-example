@@ -29,7 +29,6 @@ const EventModal = ({
     api.events.getEventsById.useQuery(selectedId, {
         enabled: !!selectedId,
         onSettled: ((data) => {
-            console.log(data)
             setTitle(data?.title ?? '')
             setDate(data?.start ?? undefined)
             setDescription(data?.title ?? '')
