@@ -1,149 +1,148 @@
 generator client {
-  provider = "prisma-client-js"
+    provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
 }
 
 model Example {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }
 
 model Account {
-  id                String  @id @default(cuid())
-  userId            String
-  type              String
-  provider          String
-  providerAccountId String
-  refresh_token     String?
-  access_token      String?
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String?
-  session_state     String?
-  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+    id                String  @id @default(cuid())
+    userId            String
+    type              String
+    provider          String
+    providerAccountId String
+    refresh_token     String?
+    access_token      String?
+    expires_at        Int?
+    token_type        String?
+    scope             String?
+    id_token          String?
+    session_state     String?
+    user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([provider, providerAccountId])
+    @@unique([provider, providerAccountId])
 }
 
 model Guestbook {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  name      String
-  message   String   @db.VarChar(100)
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    name      String
+    message   String   @db.VarChar(100)
 }
 
 model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique
-  userId       String
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    id           String   @id @default(cuid())
+    sessionToken String   @unique
+    userId       String
+    expires      DateTime
+    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model User {
-  id                         String         @id @default(cuid())
-  name                       String?
-  displayName                String?
-  email                      String?        @unique
-  emailVerified              DateTime?
-  image                      String?
-  createdAt                  DateTime       @default(now())
-  updatedAt                  DateTime       @updatedAt
-  public                     Boolean        @default(false)
-  accounts                   Account[]
-  friendshipRequestsSent     Friendship[]   @relation("FriendRequestsSent")
-  friendshipRequestsReceived Friendship[]   @relation("FriendRequestsReceived")
-  PeopleEvents               PeopleEvents[]
-  peopleGroups               PeopleGroups[]
-  sessions                   Session[]
+    id                         String         @id @default(cuid())
+    name                       String?
+    displayName                String?
+    email                      String?        @unique
+    emailVerified              DateTime?
+    image                      String?
+    createdAt                  DateTime       @default(now())
+    updatedAt                  DateTime       @updatedAt
+    public                     Boolean        @default(false)
+    accounts                   Account[]
+    friendshipRequestsSent     Friendship[]   @relation("FriendRequestsSent")
+    friendshipRequestsReceived Friendship[]   @relation("FriendRequestsReceived")
+    peopleGroups               PeopleGroups[]
+    sessions                   Session[]
 
-  @@unique([id, name, email, image])
+    @@unique([id, name, email, image])
 }
 
 model Friendship {
-  id                  String                  @id @default(cuid())
-  requestSentById     String
-  user1               String
-  user1Email          String
-  user1ProfilePicture String
-  requestSentToId     String
-  user2               String
-  user2Email          String
-  user2ProfilePicture String
-  status              FriendshipRequestStatus @default(PENDING)
-  fromId              User                    @relation("FriendRequestsSent", fields: [requestSentById, user1, user1Email, user1ProfilePicture], references: [id, name, email, image])
-  to                  User                    @relation("FriendRequestsReceived", fields: [requestSentToId, user2, user2Email, user2ProfilePicture], references: [id, name, email, image])
+    id                  String                  @id @default(cuid())
+    requestSentById     String
+    user1               String
+    user1Email          String
+    user1ProfilePicture String
+    requestSentToId     String
+    user2               String
+    user2Email          String
+    user2ProfilePicture String
+    status              FriendshipRequestStatus @default(PENDING)
+    fromId              User                    @relation("FriendRequestsSent", fields: [requestSentById, user1, user1Email, user1ProfilePicture], references: [id, name, email, image])
+    to                  User                    @relation("FriendRequestsReceived", fields: [requestSentToId, user2, user2Email, user2ProfilePicture], references: [id, name, email, image])
 }
 
 model Group {
-  id           String         @id @default(cuid())
-  title        String
-  description  String
-  image        String
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
-  Event        Event[]
-  peopleGroups PeopleGroups[] @relation("group")
+    id           String         @id @default(cuid())
+    title        String
+    description  String
+    image        String
+    createdAt    DateTime       @default(now())
+    updatedAt    DateTime       @updatedAt
+    Event        Event[]
+    peopleGroups PeopleGroups[] @relation("group")
+    Message      Message[]
 }
 
 model PeopleGroups {
-  id      String @id @default(cuid())
-  groupId String
-  userId  String
-  role    Role   @default(USER)
-  groups  Group  @relation("group", fields: [groupId], references: [id])
-  user    User   @relation(fields: [userId], references: [id])
+    id      String @id @default(cuid())
+    groupId String
+    userId  String
+    role    Role   @default(USER)
+    groups  Group  @relation("group", fields: [groupId], references: [id])
+    user    User   @relation(fields: [userId], references: [id])
 
-  @@unique([groupId, userId])
+    @@unique([groupId, userId])
 }
 
 model Event {
-  id           String         @id @default(cuid())
-  title        String
-  allDay       Boolean
-  start        DateTime
-  end          DateTime
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
-  groupId      String
-  address      String?
-  postcode     String?
-  countryCode  String?
-  Group        Group          @relation(fields: [groupId], references: [id])
-  PeopleEvents PeopleEvents[]
+    id          String   @id @default(cuid())
+    title       String
+    allDay      Boolean
+    start       DateTime
+    end         DateTime
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+    groupId     String
+    address     String?
+    postcode    String?
+    countryCode String?
+    Group       Group    @relation(fields: [groupId], references: [id])
+}
+
+model Message {
+    id        String   @id @default(cuid())
+    message   String
+    author    String
+    createdAt DateTime @default(now())
+    groupId   String
+
+    Group Group @relation(fields: [groupId], references: [id])
 }
 
 model VerificationToken {
-  identifier String
-  token      String   @unique
-  expires    DateTime
+    identifier String
+    token      String   @unique
+    expires    DateTime
 
-  @@unique([identifier, token])
-}
-
-model PeopleEvents {
-  id      String @id
-  eventId String
-  userId  String
-  Event   Event  @relation(fields: [eventId], references: [id])
-  User    User   @relation(fields: [userId], references: [id])
-
-  @@unique([eventId, userId])
+    @@unique([identifier, token])
 }
 
 enum Role {
-  USER
-  ADMIN
+    USER
+    ADMIN
 }
 
 enum FriendshipRequestStatus {
-  PENDING
-  ACCEPTED
-  REJECTED
+    PENDING
+    ACCEPTED
+    REJECTED
 }

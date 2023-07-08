@@ -1,13 +1,13 @@
-import { type Group, Prisma } from "@prisma/client"
+import { Prisma } from "@prisma/client"
 
 const groupsWithPeople = Prisma.validator<Prisma.GroupArgs>()({
     include: {
         peopleGroups: { include: { user: true } }
     },
 })
-type Groups = Prisma.GroupGetPayload<typeof groupsWithPeople>
+export type Groups = Prisma.GroupGetPayload<typeof groupsWithPeople>
 
-export default function Groups({ groups, onGroupClick }: { groups?: Groups[], onGroupClick: (group: Group) => void }) {
+export default function Groups({ groups, onGroupClick }: { groups?: Groups[], onGroupClick: (group: Groups) => void }) {
     const formattedGroups = groups?.map((group) => ({
         ...group,
         guests: group?.peopleGroups?.map((groupPerson) => groupPerson.user),

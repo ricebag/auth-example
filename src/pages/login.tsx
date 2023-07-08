@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 
-import { Copyright, LoginForm, } from '../components'
+import { LoginForm, } from '../components'
 
 const LoginPage: React.FC = () => {
   const router = useRouter();
@@ -15,10 +15,8 @@ const LoginPage: React.FC = () => {
   });
 
   return (
-    <div className="bg-slate-100">
+    <div className="bg-slate-100 pt-14">
       <LoginForm />
-
-      <Copyright />
     </div>
   );
 }

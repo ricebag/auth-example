@@ -1,3 +1,39 @@
+# Authentication example
+
+Production build -> weezz.co.uk
+
+### Creating prisma updates
+- Make changes to the primsa/schema.prisma file
+- Must run the following command to update the db
+```
+npx prisma migrate dev
+```
+or
+```
+npx prisma db push
+```
+- Restart TS server (Ctrl + Shift + P) or restart vscode
+
+#### Create a migration
+Create a new migration folder
+```
+mkdir -p prisma/migrations/{migration_number}_{migration_name}
+i.e.
+mkdir -p prisma/migrations/1_adding_messages
+```
+
+Create a diff between db url and the latest schema file
+```
+npx prisma migrate diff \
+--from-url {db_url} \
+--to-schema-datamodel prisma/schema.prisma \
+--script > prisma/migrations/{migration_name}/migration.sql
+```
+
+
+
+
+
 # Create T3 App
 
 This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.

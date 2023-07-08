@@ -16,7 +16,7 @@ export default function Events({ groupId, showModal, toggleModal }: EventsCompon
     const { data: events, refetch: refetchEvents, isLoading } = api.events.getEventsByGroupId.useQuery(groupId)
 
     return (
-        <div>
+        <div className="flex-grow">
             <div className="mt-6 flow-root">
                 <ul role="list" className="-my-5 divide-y divide-gray-200">
                     {events?.map((event) => (

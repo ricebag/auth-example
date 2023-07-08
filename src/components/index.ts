@@ -6,6 +6,7 @@ export { default as FriendsSearch } from './FriendsSearch'
 export { default as GroupIcons } from './GroupIcons'
 export { default as Events } from './Events'
 export { default as Groups } from './Groups'
+export { default as GroupChat } from './GroupChat'
 export * from './Contacts'
 export * from './LoginOptions'
 
