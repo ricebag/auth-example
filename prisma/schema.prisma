@@ -61,6 +61,7 @@ model User {
     friendshipRequestsReceived Friendship[]   @relation("FriendRequestsReceived")
     peopleGroups               PeopleGroups[]
     sessions                   Session[]
+    Message                    Message[]
 
     @@unique([id, name, email, image])
 }
@@ -124,7 +125,9 @@ model Message {
     author    String
     createdAt DateTime @default(now())
     groupId   String
+    userId    String?
 
+    User  User? @relation(fields: [userId], references: [id])
     Group Group @relation(fields: [groupId], references: [id])
 }
 

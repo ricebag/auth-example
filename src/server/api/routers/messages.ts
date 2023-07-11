@@ -10,7 +10,10 @@ export const messageRouter = createTRPCRouter({
         where: {
           Group: {
             id: input
-          }
+          },
+        },
+        include: {
+          User: true
         },
         orderBy: {
           createdAt: "asc",
@@ -39,7 +42,8 @@ export const messageRouter = createTRPCRouter({
             id,
             message,
             groupId,
-            author: ctx.session.user.id
+            author: ctx.session.user.id,
+            userId: ctx.session.user.id
           },
         });
       } catch (error) {

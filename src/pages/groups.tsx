@@ -3,6 +3,7 @@ import type { NextPage } from "next";
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import { useSession } from 'next-auth/react'
+import { PencilSquareIcon } from '@heroicons/react/24/outline'
 
 import { Button, Events, VerticleDivider, GroupModal, Groups, Loader, GroupChat } from '../components'
 import { api } from "../utils/api";
@@ -45,40 +46,47 @@ const GroupsPage: NextPage = () => {
 
   const { data: groups, refetch: refetchGroups, isFetching } = api.groups.getGroupsByUserId.useQuery()
 
-
   const onGroupClick = (nextGroup: GroupsType) => {
     if (selectedGroup?.id === nextGroup.id) setSelectedGroup(undefined)
     else setSelectedGroup(nextGroup)
   }
 
+  const users = selectedGroup?.peopleGroups?.reduce((acc, peopleGroup) => {
+    if (acc === '') return peopleGroup.user.name || ''
+    if (peopleGroup?.user?.name) return `${acc}, ${peopleGroup?.user?.name}`
+    return acc
+  }, '')
+
   return (
     <div className='grow pt-16'>
       <div className='flex grow m-2'>
-        <div className='grow px-3'>
+        <div className={`grow px-3 ${selectedGroup ? 'max-w-[25%]' : ''} pt-1`}>
           <div className='flex justify-between'>
             <h1 className='text-3xl'>Groups</h1>
             <Button className='self-center bg-indigo-400' variant={'default'} onClick={() => toggleGroupModal(!showGroupModal)}>New Group</Button>
           </div>
-          <Groups groups={groups} onGroupClick={onGroupClick} />
+          <Groups groups={groups} onGroupClick={onGroupClick} selectedGroup={selectedGroup} />
         </div>
 
         {selectedGroup && (
-          <div className='flex grow-[3] flex-col'>
-            <div className='flex flex-row border-b border-gray-200 mx-6'>
-              <div className="">
-                {/* TODO: Once users are linked take their image and put it here */}
-                <img className="h-16 w-16 rounded-full" src={'/avatar.svg'} alt="" />
-              </div>
+          <div className='flex grow-[3] flex-col w-[75%]'>
+            <div className='flex flex-row border-b border-gray-200 mx-6 p-1 w-[95%]'>
+              <img className="h-14 w-14 rounded-full" src={selectedGroup.image} />
 
-              <div className='self-center w-full mx-2'>
+              <div className='self-center w-full mx-3 w-[100%] truncate'>
                 <h1 className='text-3xl'>{selectedGroup.title}</h1>
-                <div className='flex'>
-                  {selectedGroup?.peopleGroups?.map((peopleGroup, key) => {
-                    if (key === 0) return (<p key={peopleGroup.userId}>{peopleGroup.user.name}</p>)
-                    return (<p key={peopleGroup.userId}>, {peopleGroup.user.name}</p>)
-                  })}
+                <div className='flex truncate text-xs text-gray-400'>
+                  {users}
                 </div>
               </div>
+
+              <button
+                type="button"
+                className={`rounded-full p-1 text-gray-400 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2`}
+              >
+                <span className="sr-only">Edit Group</span>
+                <PencilSquareIcon className="h-6 w-6" aria-hidden="true" />
+              </button>
             </div>
             <div className='flex flex-col md:flex-row'>
               <VerticleDivider />

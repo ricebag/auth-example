@@ -22,6 +22,11 @@ export const groupRouter = createTRPCRouter({
             include: {
               user: {}
             }
+          },
+          Message: {
+            orderBy: {
+              createdAt: 'asc'
+            }
           }
         },
         orderBy: {

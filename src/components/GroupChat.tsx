@@ -2,26 +2,25 @@ import { useState, type KeyboardEvent } from "react";
 import { useSession } from "next-auth/react";
 
 import { api } from "../utils/api"
-import { type Message } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 
 type GroupChatComponentTypes = {
     groupId: string,
     isLoading: boolean,
 }
 
+const MessageWithUser = Prisma.validator<Prisma.MessageArgs>()({
+    include: {
+        User: true
+    },
+})
+export type Message = Prisma.MessageGetPayload<typeof MessageWithUser>
+
 const userMessage = (message: Message, previousDiffAuthor: boolean, marginTop: string) => (
     <div className="flex self-end" key={message.id}>
-        <div>
-            <p className={`bg-indigo-300 max-w-[80%] grow-0 py-1 px-2 m-2 mr-9 rounded-lg rounded-tr-none ${marginTop}`}>
-                {message.message}
-            </p>
-        </div>
-
-        {previousDiffAuthor &&
-            <div className="-ml-8 pt-1">
-                <img className="h-8 w-8 rounded-full" src={'/avatar.svg'} alt="" />
-            </div>
-        }
+        <p className={`bg-indigo-300 max-w-[80%] grow-0 py-1 px-2 m-2 mr-9 rounded-lg rounded-tr-none ${marginTop}`}>
+            {message.message}
+        </p>
     </div>
 )
 
@@ -36,9 +35,9 @@ const systemMessage = (message: Message) => (
 const groupMemberMessage = (message: Message, previousDiffAuthor: boolean, marginTop: string) => (
     <div className="flex self-start" key={message.id}>
         {previousDiffAuthor &&
-            <div className="-mr-8 pt-1">
+            <div className="-mr-8 pt-2">
                 {/* TODO: Once users are linked take their image and put it here */}
-                <img className="h-8 w-8 rounded-full" src={'/avatar.svg'} alt="" />
+                <img className="h-8 w-8 rounded-full" src={message.User?.image ? message.User.image : '/avatar.svg'} alt="" />
             </div>
         }
 
